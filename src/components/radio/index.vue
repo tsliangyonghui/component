@@ -33,7 +33,6 @@ export default {
   },
   data() {
     return {
-
     }
   },
   computed: {
@@ -62,6 +61,9 @@ export default {
   mounted() {
     debugger
     this.disabled
+  },
+  methods: {
+    foo() {}
   }
 }
 </script>
