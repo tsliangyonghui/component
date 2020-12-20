@@ -1,17 +1,21 @@
 <template>
   <div id="app">
     <m-button>按键</m-button>
-    <m-radio disabled v-model="radio" label="1">备选项</m-radio>
-    <m-radio v-model="radio" label="2">备选项</m-radio>
+    <m-radio v-model="radio" label="1">备选项</m-radio>
+    <m-radio-group v-model="radio">
+      <m-radio :label="3">备选项</m-radio>
+      <m-radio :label="6">备选项</m-radio>
+    </m-radio-group>
   </div>
 </template>
 
 <script>
 import MButton from './components/button'
 import MRadio from './components/radio'
+import MRadioGroup from './components/radio/radio-group'
 export default {
   name: 'App',
-  components: { MButton, MRadio },
+  components: { MButton, MRadio, MRadioGroup },
   provide() {
     return {
       foo: this.foo,
@@ -20,7 +24,7 @@ export default {
   },
   data() {
     return {
-      radio: '1',
+      radio: '3',
       boo: { a: 1, b: 2 }
     }
   },
