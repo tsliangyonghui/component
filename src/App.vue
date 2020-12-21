@@ -1,12 +1,6 @@
 <template>
   <div id="app">
-    <m-button>按键</m-button>
-    <m-radio-group v-model="radio1">
-      <m-radio-button label="上海"></m-radio-button>
-      <m-radio-button label="北京"></m-radio-button>
-      <m-radio-button label="广州"></m-radio-button>
-      <m-radio-button label="深圳"></m-radio-button>
-    </m-radio-group>
+    <m-checkbox v-model="checked">备选项</m-checkbox>
   </div>
 </template>
 
