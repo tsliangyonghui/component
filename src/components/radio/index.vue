@@ -5,30 +5,13 @@
       { 'is-focus': focus },
       { 'is-bordered': border },
       { 'is-checked': model === label }
-    ]"
-    role="radio"
-    :tabindex="tabIndex"
-    @keydown.space.stop.prevent="model = isDisabled ? model : label"
-    >
-    <span class="el-radio__input"
-      :class="{
+    ]" role="radio" :tabindex="tabIndex" @keydown.space.stop.prevent="model = isDisabled ? model : label">
+    <span class="el-radio__input" :class="{
         'is-disabled': isDisabled,
         'is-checked': model === label
-      }"
-    >
+      }">
       <span class="el-radio__inner"></span>
-      <input
-        class="el-radio__original"
-        :value="label"
-        type="radio"
-        v-model="model"
-        @focus="focus = true"
-        @blur="focus = false"
-        @change="handleChange"
-        :name="name"
-        :disabled="isDisabled"
-        tabindex="-1"
-      >
+      <input class="el-radio__original" :value="label" type="radio" v-model="model" @focus="focus = true" @blur="focus = false" @change="handleChange" :name="name" :disabled="isDisabled" tabindex="-1">
     </span>
     <span class="el-radio__label" @keydown.stop>
       <slot></slot>
@@ -68,7 +51,7 @@ export default {
     isGroup() {
       let parent = this.$parent
       while (parent) {
-        if (parent.$options.componentName !== 'ElRadioGroup') {
+        if (parent.$options.componentName !== 'MRadioGroup') {
           parent = parent.$parent
         } else {
           this._radioGroup = parent
@@ -83,7 +66,7 @@ export default {
       },
       set(val) {
         if (this.isGroup) {
-          this.dispatch('ElRadioGroup', 'input', [val])
+          this.dispatch('MRadioGroup', 'input', [val])
         } else {
           this.$emit('input', val)
         }
@@ -114,13 +97,13 @@ export default {
     handleChange() {
       this.$nextTick(() => {
         this.$emit('change', this.model)
-        this.isGroup && this.dispatch('ElRadioGroup', 'handleChange', this.model)
+        this.isGroup && this.dispatch('MRadioGroup', 'handleChange', this.model)
       })
     }
   }
 }
 </script>
-<style lang="scss" scoped>
+<style>
 .el-radio {
   color: #606266;
   font-weight: 500;
@@ -141,54 +124,69 @@ export default {
   display: inline-block;
   line-height: 1;
   position: relative;
-  vertical-align: middle
+  vertical-align: middle;
 }
 .el-radio__input.is-checked .el-radio__inner {
-    border-color: #409eff;
-    background: #409eff;
+  border-color: #409eff;
+  background: #409eff;
 }
 .el-radio__inner {
-    border: 1px solid #dcdfe6;
-    border-radius: 100%;
-    width: 14px;
-    height: 14px;
-    background-color: #fff;
-    position: relative;
-    cursor: pointer;
-    display: inline-block;
-    box-sizing: border-box
+  border: 1px solid #dcdfe6;
+  border-radius: 100%;
+  width: 14px;
+  height: 14px;
+  background-color: #fff;
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  box-sizing: border-box;
 }
 .el-radio__input.is-checked .el-radio__inner:after {
-    transform: translate(-50%,-50%) scale(1)
+  transform: translate(-50%, -50%) scale(1);
 }
 .el-radio__inner:after {
-    width: 4px;
-    height: 4px;
-    border-radius: 100%;
-    background-color: #fff;
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-50%) scale(0);
-    transition: transform .15s ease-in
+  width: 4px;
+  height: 4px;
+  border-radius: 100%;
+  background-color: #fff;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.15s ease-in;
 }
 .el-radio__original {
-    opacity: 0;
-    outline: none;
-    position: absolute;
-    z-index: -1;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: 0
+  opacity: 0;
+  outline: none;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
 }
 .el-radio__label {
-    font-size: 14px;
-    padding-left: 10px;
+  font-size: 14px;
+  padding-left: 10px;
 }
-.el-radio__input.is-checked+.el-radio__label {
-    color: #409eff;
+.el-radio__input.is-checked + .el-radio__label {
+  color: #409eff;
+}
+.el-radio.is-bordered {
+  padding: 12px 20px 0 10px;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+  height: 40px;
+}
+.el-radio.is-bordered.is-checked {
+  border-color: #409eff;
+}
+.el-radio--small.is-bordered {
+  padding: 8px 15px 0 10px;
+  border-radius: 3px;
+  height: 32px;
 }
 </style>
