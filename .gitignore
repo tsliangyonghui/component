@@ -18,5 +18,5 @@ selenium-debug.log
 *.njsproj
 *.sln
 
-config/dev.env.js
+# config/dev.env.js
 build/webpack.dev.conf.js
