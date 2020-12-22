@@ -105,7 +105,7 @@ export default {
   box-shadow: none !important;
 }
 .el-radio-button:last-child .el-radio-button__inner {
-    border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
 }
 .el-radio-button__inner {
   line-height: 1;
@@ -126,10 +126,10 @@ export default {
   font-size: 14px;
   border-radius: 0;
 }
-.el-radio-button__orig-radio:checked+.el-radio-button__inner {
-    color: #fff;
-    background-color: #409eff;
-    border-color: #409eff;
-    box-shadow: -1px 0 0 0 #409eff
+.el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  box-shadow: -1px 0 0 0 #409eff;
 }
 </style>
