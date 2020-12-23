@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <m-input v-model="input" placeholder="请输入内容"></m-input>
+    <m-input v-model="input" placeholder="请输入内容" clearable></m-input>
   </div>
 </template>
 

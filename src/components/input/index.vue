@@ -13,6 +13,17 @@
   ]" @mouseenter="hovering = true" @mouseleave="hovering = false">
     <template v-if="type !== 'textarea'">
       <input :tabindex="tabindex" class="el-input__inner" v-bind="$attrs" :type="type" :disabled="inputDisabled" :readonly="readonly" :autocomplete="autocomplete" :value="currentValue" ref="input" @compositionstart="handleComposition" @compositionupdate="handleComposition" @compositionend="handleComposition" @input="handleInput" @focus="handleFocus" @blur="handleBlur" @change="handleChange">
+      <span class="el-input__suffix" v-if="$slots.suffix || suffixIcon || showClear">
+        <span class="el-input__suffix-inner">
+          <template v-if="!showClear">
+            <slot name="suffix"></slot>
+            <i class="el-input__icon" v-if="suffixIcon" :class="suffixIcon">
+            </i>
+          </template>
+          <i v-else class="el-input__icon el-icon-circle-close el-input__clear" @click="clear"></i>
+          <i class="el-input__icon" v-if="validateState" :class="['el-input__validateIcon', validateIcon]"></i>
+        </span>
+      </span>
     </template>
   </div>
 </template>
@@ -63,20 +74,33 @@ export default {
     },
     tabindex: String
   },
+  data() {
+    return {
+      hovering: false,
+      isOnComposition: false,
+      currentValue: this.value === undefined || this.value === null
+        ? ''
+        : this.value
+    }
+  },
   computed: {
+    validateState() {
+      // debugger
+
+      return this.elFormItem ? this.elFormItem.validateState : ''
+    },
     inputSize() {
       return this.size || this._elFormItemSize
     },
     inputDisabled() {
       return this.disabled || (this.elForm || {}).disabled
-    }
-  },
-  data() {
-    return {
-      hovering: false,
-      currentValue: this.value === undefined || this.value === null
-        ? ''
-        : this.value
+    },
+    showClear() {
+      return this.clearable &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        this.currentValue !== '' &&
+        (this.focused || this.hovering)
     }
   },
   methods: {
@@ -106,6 +130,15 @@ export default {
         }
       }
     },
+    setCurrentValue(value) {
+      if (this.isOnComposition && value === this.valueBeforeComposition) return
+      this.currentValue = value
+      if (this.isOnComposition) return
+      this.$nextTick(this.resizeTextarea)
+      if (this.validateEvent && this.currentValue === this.value) {
+        this.dispatch('ElFormItem', 'el.form.change', [value])
+      }
+    },
     handleInput(event) {
       const value = event.target.value
       this.setCurrentValue(value)
@@ -114,6 +147,12 @@ export default {
     },
     handleChange(event) {
       this.$emit('change', event.target.value)
+    },
+    clear() {
+      this.$emit('input', '')
+      this.$emit('change', '')
+      this.$emit('clear')
+      this.setCurrentValue('')
     }
   }
 }
@@ -153,5 +192,28 @@ export default {
 
 .el-input__inner:focus {
   border-color: #409eff;
+}
+.el-input.is-disabled .el-input__inner {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+.el-input--suffix .el-input__inner {
+  padding-right: 30px;
+}
+.el-input__suffix {
+  position: absolute;
+  height: 100%;
+  right: 5px;
+  top: 0;
+  text-align: center;
+  color: #c0c4cc;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+
+.el-input__suffix-inner {
+  pointer-events: all;
 }
 </style>
