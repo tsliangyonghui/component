@@ -4,6 +4,7 @@ import Vue from 'vue'
 // Vue.use(Element, {
 //   size: 'medium'
 // })
+import './styles/font.css'
 import App from './App'
 
 new Vue({

@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <i class="el-icon-edit"></i>
     <m-input v-model="input" placeholder="请输入内容" clearable></m-input>
   </div>
 </template>

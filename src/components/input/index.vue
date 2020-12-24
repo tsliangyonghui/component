@@ -216,4 +216,23 @@ export default {
 .el-input__suffix-inner {
   pointer-events: all;
 }
+
+.el-input__icon,.el-input__prefix {
+    height: 100%;
+    text-align: center;
+    transition: all .3s
+}
+
+.el-input__icon {
+    width: 25px;
+    line-height: 40px
+}
+
+.el-input__icon:after {
+    content: "";
+    height: 100%;
+    width: 0;
+    display: inline-block;
+    vertical-align: middle
+}
 </style>
