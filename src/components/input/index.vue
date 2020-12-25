@@ -12,7 +12,15 @@
     }
   ]" @mouseenter="hovering = true" @mouseleave="hovering = false">
     <template v-if="type !== 'textarea'">
+      <div class="el-input-group__prepend" v-if="$slots.prepend">
+        <slot name="prepend"></slot>
+      </div>
       <input :tabindex="tabindex" class="el-input__inner" v-bind="$attrs" :type="type" :disabled="inputDisabled" :readonly="readonly" :autocomplete="autocomplete" :value="currentValue" ref="input" @compositionstart="handleComposition" @compositionupdate="handleComposition" @compositionend="handleComposition" @input="handleInput" @focus="handleFocus" @blur="handleBlur" @change="handleChange">
+      <span class="el-input__prefix" v-if="$slots.prefix || prefixIcon">
+        <slot name="prefix"></slot>
+        <i class="el-input__icon" v-if="prefixIcon" :class="prefixIcon">
+        </i>
+      </span>
       <span class="el-input__suffix" v-if="$slots.suffix || suffixIcon || showClear">
         <span class="el-input__suffix-inner">
           <template v-if="!showClear">
@@ -24,6 +32,9 @@
           <i class="el-input__icon" v-if="validateState" :class="['el-input__validateIcon', validateIcon]"></i>
         </span>
       </span>
+      <div class="el-input-group__append" v-if="$slots.append">
+        <slot name="append"></slot>
+      </div>
     </template>
   </div>
 </template>
@@ -77,16 +88,13 @@ export default {
   data() {
     return {
       hovering: false,
+      focused: false,
       isOnComposition: false,
-      currentValue: this.value === undefined || this.value === null
-        ? ''
-        : this.value
+      currentValue: this.value == null ? '' : this.value
     }
   },
   computed: {
     validateState() {
-      // debugger
-
       return this.elFormItem ? this.elFormItem.validateState : ''
     },
     inputSize() {
@@ -217,22 +225,66 @@ export default {
   pointer-events: all;
 }
 
-.el-input__icon,.el-input__prefix {
-    height: 100%;
-    text-align: center;
-    transition: all .3s
+.el-input__prefix {
+  position: absolute;
+  left: 5px;
+  top: 0;
+  color: #c0c4cc;
+}
+.el-input__icon,
+.el-input__prefix {
+  height: 100%;
+  text-align: center;
+  transition: all 0.3s;
 }
 
 .el-input__icon {
-    width: 25px;
-    line-height: 40px
+  width: 25px;
+  line-height: 40px;
 }
 
 .el-input__icon:after {
-    content: "";
-    height: 100%;
-    width: 0;
-    display: inline-block;
-    vertical-align: middle
+  content: "";
+  height: 100%;
+  width: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+.el-input-group {
+  line-height: normal;
+  display: inline-table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.el-input-group__append,
+.el-input-group__prepend {
+  background-color: #f5f7fa;
+  color: #909399;
+  vertical-align: middle;
+  display: table-cell;
+  position: relative;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 0 20px;
+  width: 1px;
+  white-space: nowrap;
+}
+.el-input-group__prepend {
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.el-input-group--prepend .el-input__inner,
+.el-input-group__append {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.el-input-group--append .el-input__inner {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.el-input-group__append {
+  border-left: 0;
 }
 </style>

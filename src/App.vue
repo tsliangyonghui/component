@@ -1,7 +1,8 @@
 <template>
   <div id="app">
-    <i class="el-icon-edit"></i>
-    <m-input v-model="input" placeholder="请输入内容" clearable></m-input>
+    <m-input v-model="input" placeholder="请选择日期">
+      <template slot="append">.com</template>
+    </m-input>
   </div>
 </template>
 
@@ -18,7 +19,8 @@ export default {
   },
   data() {
     return {
-      input: ''
+      input: '',
+      header: 'header'
     }
   },
   computed: {
