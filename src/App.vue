@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <m-input v-model="input" placeholder="请选择日期">
-      <template slot="append">.com</template>
-    </m-input>
+    <m-input v-model="input" placeholder="请选择日期" show-password></m-input>
   </div>
 </template>
 

@@ -83,6 +83,14 @@ export default {
       type: Boolean,
       default: false
     },
+    showPassword: {
+      type: Boolean,
+      default: false
+    },
+    showWordLimit: {
+      type: Boolean,
+      default: false
+    },
     tabindex: String
   },
   data() {
