@@ -4,31 +4,38 @@
     inputSize ? 'el-input--' + inputSize : '',
      {
       'is-disabled': inputDisabled,
+       'is-exceed': inputExceed,
       'el-input-group': $slots.prepend || $slots.append,
       'el-input-group--append': $slots.append,
       'el-input-group--prepend': $slots.prepend,
       'el-input--prefix': $slots.prefix || prefixIcon,
-      'el-input--suffix': $slots.suffix || suffixIcon || clearable
+      'el-input--suffix': $slots.suffix || suffixIcon || clearable || showPassword
     }
   ]" @mouseenter="hovering = true" @mouseleave="hovering = false">
     <template v-if="type !== 'textarea'">
       <div class="el-input-group__prepend" v-if="$slots.prepend">
         <slot name="prepend"></slot>
       </div>
-      <input :tabindex="tabindex" class="el-input__inner" v-bind="$attrs" :type="type" :disabled="inputDisabled" :readonly="readonly" :autocomplete="autocomplete" :value="currentValue" ref="input" @compositionstart="handleComposition" @compositionupdate="handleComposition" @compositionend="handleComposition" @input="handleInput" @focus="handleFocus" @blur="handleBlur" @change="handleChange">
+      <input :tabindex="tabindex" class="el-input__inner" v-bind="$attrs" :type="showPassword ? (passwordVisible ? 'text': 'password') : type" :disabled="inputDisabled" :readonly="readonly" :autocomplete="autocomplete" ref="input" @compositionstart="handleCompositionStart" @compositionupdate="handleCompositionUpdate" @compositionend="handleCompositionEnd" @input="handleInput" @focus="handleFocus" @blur="handleBlur" @change="handleChange">
       <span class="el-input__prefix" v-if="$slots.prefix || prefixIcon">
         <slot name="prefix"></slot>
         <i class="el-input__icon" v-if="prefixIcon" :class="prefixIcon">
         </i>
       </span>
-      <span class="el-input__suffix" v-if="$slots.suffix || suffixIcon || showClear">
+      <span class="el-input__suffix" v-if="getSuffixVisible">
         <span class="el-input__suffix-inner">
-          <template v-if="!showClear">
+          <template v-if="!showClear || !showPwdVisible ">
             <slot name="suffix"></slot>
             <i class="el-input__icon" v-if="suffixIcon" :class="suffixIcon">
             </i>
           </template>
-          <i v-else class="el-input__icon el-icon-circle-close el-input__clear" @click="clear"></i>
+          <i v-if="showClear" class="el-input__icon el-icon-circle-close el-input__clear" @click="clear" @mousedown.prevent></i>
+          <i v-if="showPwdVisible" class="el-input__icon el-icon-view el-input__clear" @click="handlePasswordVisible"></i>
+          <span v-if="isWordLimitVisible" class="el-input__count">
+            <span class="el-input__count-inner">
+              {{ textLength }}/{{ upperLimit }}
+            </span>
+          </span>
           <i class="el-input__icon" v-if="validateState" :class="['el-input__validateIcon', validateIcon]"></i>
         </span>
       </span>
@@ -36,11 +43,15 @@
         <slot name="append"></slot>
       </div>
     </template>
+    <textarea v-else :tabindex="tabindex" class="el-textarea__inner" @compositionstart="handleCompositionStart" @compositionupdate="handleCompositionUpdate" @compositionend="handleCompositionEnd" @input="handleInput" ref="textarea" v-bind="$attrs" :disabled="inputDisabled" :readonly="readonly" :autocomplete="autocomplete" :style="textareaStyle" @focus="handleFocus" @blur="handleBlur" @change="handleChange" :aria-label="label">
+    </textarea>
+    <span v-if="isWordLimitVisible && type === 'textarea'" class="el-input__count">{{ textLength }}/{{ upperLimit }}</span>
   </div>
 </template>
 
 <script>
 import Emitter from '@/mixins/emitter'
+import merge from '@/mixins/merge'
 export default {
   name: 'MInput',
   componentName: 'MInput',
@@ -98,10 +109,52 @@ export default {
       hovering: false,
       focused: false,
       isOnComposition: false,
+      passwordVisible: false,
+      isComposing: false,
+      textareaCalcStyle: {},
       currentValue: this.value == null ? '' : this.value
     }
   },
   computed: {
+    getSuffixVisible() {
+      return this.$slots.suffix ||
+        this.suffixIcon ||
+        this.showClear ||
+        this.showPassword ||
+        this.isWordLimitVisible ||
+        (this.validateState && this.needStatusIcon)
+    },
+    inputExceed() {
+      return this.isWordLimitVisible &&
+        (this.textLength > this.upperLimit)
+    },
+    upperLimit() {
+      return this.$attrs.maxlength
+    },
+    textLength() {
+      if (typeof this.value === 'number') {
+        return String(this.value).length
+      }
+
+      return (this.value || '').length
+    },
+    isWordLimitVisible() {
+      return this.showWordLimit &&
+        this.$attrs.maxlength &&
+        (this.type === 'text' || this.type === 'textarea') &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        !this.showPassword
+    },
+    nativeInputValue() {
+      return this.value === null || this.value === undefined ? '' : String(this.value)
+    },
+    showPwdVisible() {
+      return this.showPassword &&
+        !this.inputDisabled &&
+        !this.readonly &&
+        (!!this.nativeInputValue || this.focused)
+    },
     validateState() {
       return this.elFormItem ? this.elFormItem.validateState : ''
     },
@@ -117,9 +170,21 @@ export default {
         !this.readonly &&
         this.currentValue !== '' &&
         (this.focused || this.hovering)
+    },
+    textareaStyle() {
+      return merge({}, this.textareaCalcStyle, { resize: this.resize })
     }
   },
   methods: {
+    getInput() {
+      return this.$refs.input || this.$refs.textarea
+    },
+    focus() {
+      this.getInput().focus()
+    },
+    blur() {
+      this.getInput().blur()
+    },
     handleBlur(event) {
       this.focused = false
       this.$emit('blur', event)
@@ -139,8 +204,7 @@ export default {
         this.handleInput(event)
       } else {
         const text = event.target.value
-        const lastCharacter = text[text.length - 1] || ''
-        this.isOnComposition = !isKorean(lastCharacter)
+        this.isOnComposition = true
         if (this.isOnComposition && event.type === 'compositionstart') {
           this.valueBeforeComposition = text
         }
@@ -163,6 +227,22 @@ export default {
     },
     handleChange(event) {
       this.$emit('change', event.target.value)
+    },
+    handlePasswordVisible() {
+      this.passwordVisible = !this.passwordVisible
+      this.focus()
+    },
+    handleCompositionStart() {
+      this.isComposing = true
+    },
+    handleCompositionUpdate(event) {
+      this.isComposing = true
+    },
+    handleCompositionEnd(event) {
+      if (this.isComposing) {
+        this.isComposing = false
+        this.handleInput(event)
+      }
     },
     clear() {
       this.$emit('input', '')
@@ -294,5 +374,12 @@ export default {
 }
 .el-input-group__append {
   border-left: 0;
+}
+.el-input .el-input__count {
+  height: 100%;
+  display: inline-flex;
+  align-items: center;
+  color: #909399;
+  font-size: 12px;
 }
 </style>

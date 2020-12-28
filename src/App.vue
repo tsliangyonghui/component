@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <m-input v-model="input" placeholder="请选择日期" show-password></m-input>
+    <m-input v-model="input" placeholder="请选择日期" type="textarea"></m-input>
   </div>
 </template>
 
