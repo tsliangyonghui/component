@@ -1,24 +1,20 @@
 <template>
   <div id="app">
-    <m-input v-model="input" placeholder="请选择日期" type="textarea" :autosize="{ minRows: 2, maxRows: 4}"></m-input>
+    <m-form ref="form" :model="form" label-width="80px">
+      <m-input v-model="form.name" placeholder="请选择日期"></m-input>
+    </m-form >
   </div>
 </template>
 
 <script>
+import MForm from './components/form'
 import MInput from './components/input'
 export default {
   name: 'App',
-  components: { MInput },
-  provide() {
-    return {
-      foo: this.foo,
-      boo: this.boo
-    }
-  },
+  components: { MInput, MForm },
   data() {
     return {
-      input: '',
-      header: 'header'
+      form: {}
     }
   },
   computed: {
