@@ -52,6 +52,7 @@
 <script>
 import Emitter from '@/mixins/emitter'
 import merge from '@/mixins/merge'
+import calcTextareaHeight from './calcTextareaHeight'
 export default {
   name: 'MInput',
   componentName: 'MInput',
@@ -175,7 +176,24 @@ export default {
       return merge({}, this.textareaCalcStyle, { resize: this.resize })
     }
   },
+  mounted() {
+    this.resizeTextarea()
+  },
   methods: {
+    resizeTextarea() {
+      const { autosize, type } = this
+      if (type !== 'textarea') return
+      if (!autosize) {
+        this.textareaCalcStyle = {
+          minHeight: calcTextareaHeight(this.$refs.textarea).minHeight
+        }
+        return
+      }
+      const minRows = autosize.minRows
+      const maxRows = autosize.maxRows
+
+      this.textareaCalcStyle = calcTextareaHeight(this.$refs.textarea, minRows, maxRows)
+    },
     getInput() {
       return this.$refs.input || this.$refs.textarea
     },
@@ -381,5 +399,69 @@ export default {
   align-items: center;
   color: #909399;
   font-size: 12px;
+}
+.el-textarea {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  vertical-align: bottom;
+  font-size: 14px;
+}
+
+.el-textarea__inner {
+  display: block;
+  resize: vertical;
+  padding: 5px 15px;
+  line-height: 1.5;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: inherit;
+  color: #606266;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.el-textarea__inner::placeholder {
+  color: #c0c4cc;
+}
+
+.el-textarea__inner:hover {
+  border-color: #c0c4cc;
+}
+
+.el-textarea__inner:focus {
+  outline: none;
+  border-color: #409eff;
+}
+
+.el-textarea .el-input__count {
+  color: #909399;
+  background: #fff;
+  position: absolute;
+  font-size: 12px;
+  bottom: 5px;
+  right: 10px;
+}
+
+.el-textarea.is-disabled .el-textarea__inner {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.el-textarea.is-disabled .el-textarea__inner::placeholder {
+  color: #c0c4cc;
+}
+
+.el-textarea.is-exceed .el-textarea__inner {
+  border-color: #f56c6c;
+}
+
+.el-textarea.is-exceed .el-input__count {
+  color: #f56c6c;
 }
 </style>
