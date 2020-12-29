@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <m-form ref="form" :model="form" label-width="80px">
+    <m-form ref="form" :model="form" label-width="auto">
       <m-form-item label="活动名称">
         <m-input v-model="form.name" placeholder="请选择日期"></m-input>
       </m-form-item>

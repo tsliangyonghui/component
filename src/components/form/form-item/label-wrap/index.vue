@@ -13,11 +13,13 @@ export default {
     isAutoWidth: Boolean,
     updateAll: Boolean
   },
+  inject: ['mForm', 'mFormItem'],
   computed: {
     style() {
-      const autoLabelWidth = this.elForm.autoLabelWidth
+      const autoLabelWidth = this.mForm.autoLabelWidth
       const style = {}
       if (autoLabelWidth && autoLabelWidth !== 'auto') {
+        debugger
         const marginLeft = parseInt(autoLabelWidth, 10) - this.computedWidth
         if (marginLeft) {
           style.marginLeft = marginLeft + 'px'
@@ -25,6 +27,49 @@ export default {
       }
       return style
     }
+  },
+  watch: {
+    computedWidth(val, oldVal) {
+      debugger
+      if (this.updateAll) {
+        this.mForm.registerLabelWidth(val, oldVal)
+        this.mFormItem.updateComputedLabelWidth(val)
+      }
+    }
+  },
+  methods: {
+    getLabelWidth() {
+      if (this.$el && this.$el.firstElementChild) {
+        const computedWidth = window.getComputedStyle(this.$el.firstElementChild).width
+        return Math.ceil(parseFloat(computedWidth))
+      } else {
+        return 0
+      }
+    },
+    updateLabelWidth(action = 'update') {
+      if (this.$slots.default && this.isAutoWidth && this.$el.firstElementChild) {
+        debugger
+        if (action === 'update') {
+          this.computedWidth = this.getLabelWidth()
+        } else if (action === 'remove') {
+          this.mForm.deregisterLabelWidth(this.computedWidth)
+        }
+      }
+    }
+  },
+  mounted() {
+    debugger
+    this.updateLabelWidth('update')
+  },
+
+  updated() {
+    debugger
+    this.updateLabelWidth('update')
+  },
+
+  beforeDestroy() {
+    debugger
+    this.updateLabelWidth('remove')
   }
 }
 </script>

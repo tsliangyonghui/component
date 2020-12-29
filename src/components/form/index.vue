@@ -42,6 +42,41 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  data() {
+    return {
+      fields: [],
+      potentialLabelWidthArr: []
+    }
+  },
+  computed: {
+    autoLabelWidth() {
+      if (!this.potentialLabelWidthArr.length) return 0
+      const max = Math.max(...this.potentialLabelWidthArr)
+      return max ? `${max}px` : ''
+    }
+  },
+  methods: {
+    getLabelWidthIndex(width) {
+      const index = this.potentialLabelWidthArr.indexOf(width)
+      if (index === -1) {
+        throw new Error('[ElementForm]unpected width ', width)
+      }
+      return index
+    },
+    registerLabelWidth(val, oldVal) {
+      debugger
+      if (val && oldVal) {
+        const index = this.getLabelWidthIndex(oldVal)
+        this.potentialLabelWidthArr.splice(index, 1, val)
+      } else if (val) {
+        this.potentialLabelWidthArr.push(val)
+      }
+    },
+    deregisterLabelWidth(val) {
+      const index = this.getLabelWidthIndex(val)
+      this.potentialLabelWidthArr.splice(index, 1)
+    }
   }
 }
 </script>

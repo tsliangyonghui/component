@@ -9,7 +9,7 @@
     },
     sizeClass ? 'el-form-item--' + sizeClass : ''
   ]">
-    <label-wrap :is-auto-width="labelStyle && labelStyle.width === 'auto'" :update-all="form.labelWidth === 'auto'">
+    <label-wrap :is-auto-width="labelStyle.width === 'auto'" :update-all="form.labelWidth === 'auto'">
       <label :for="labelFor" class="el-form-item__label" :style="labelStyle" v-if="label || $slots.label">
         <slot name="label">{{label + form.labelSuffix}}</slot>
       </label>
@@ -76,6 +76,11 @@ export default {
     },
     labelStyle() {
       const ret = {}
+      if (this.form.labelPosition === 'top') return ret
+      const labelWidth = this.labelWidth || this.form.labelWidth
+      if (labelWidth) {
+        ret.width = labelWidth
+      }
       return ret
     },
     sizeClass() {
@@ -83,19 +88,19 @@ export default {
     },
     contentStyle() {
       const ret = {}
-      const label = this.label
-      if (this.form.labelPosition === 'top' || this.form.inline) return ret
-      if (!label && !this.labelWidth && this.isNested) return ret
-      const labelWidth = this.labelWidth || this.form.labelWidth
-      if (labelWidth === 'auto') {
-        if (this.labelWidth === 'auto') {
-          ret.marginLeft = this.computedLabelWidth
-        } else if (this.form.labelWidth === 'auto') {
-          ret.marginLeft = this.elForm.autoLabelWidth
-        }
-      } else {
-        ret.marginLeft = labelWidth
-      }
+      // const label = this.label
+      // if (this.form.labelPosition === 'top' || this.form.inline) return ret
+      // if (!label && !this.labelWidth && this.isNested) return ret
+      // const labelWidth = this.labelWidth || this.form.labelWidth
+      // if (labelWidth === 'auto') {
+      //   if (this.labelWidth === 'auto') {
+      //     ret.marginLeft = this.computedLabelWidth
+      //   } else if (this.form.labelWidth === 'auto') {
+      //     ret.marginLeft = this.elForm.autoLabelWidth
+      //   }
+      // } else {
+      //   ret.marginLeft = labelWidth
+      // }
       return ret
     },
     labelFor() {
@@ -118,4 +123,21 @@ export default {
 </script>
 
 <style>
+.el-form-item {
+  margin-bottom: 22px;
+}
+
+.el-form-item:after,
+.el-form-item:before {
+  display: table;
+  content: "";
+}
+
+.el-form-item:after {
+  clear: both;
+}
+
+.el-form-item .el-form-item {
+  margin-bottom: 0;
+}
 </style>
