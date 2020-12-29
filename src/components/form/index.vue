@@ -11,6 +11,11 @@
 export default {
   name: 'MForm',
   componentName: 'MForm',
+  provide() {
+    return {
+      mForm: this
+    }
+  },
   props: {
     model: Object,
     rules: Object,
@@ -42,5 +47,4 @@ export default {
 </script>
 
 <style>
-
 </style>
