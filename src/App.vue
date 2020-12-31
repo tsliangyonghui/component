@@ -27,6 +27,11 @@ export default {
   },
   methods: {
 
+  },
+  mounted() {
+    var a = { a: 123 }
+    var b = { ...a }
+    console.log(b)
   }
 }
 </script>
