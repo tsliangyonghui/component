@@ -1,9 +1,12 @@
 import Vue from 'vue'
-// import Element from 'element-ui'
-// import 'element-ui/lib/theme-chalk/index.css'
-// Vue.use(Element, {
-//   size: 'medium'
-// })
+import MForm from './components/form'
+import MFormItem from './components/form/form-item'
+import MInput from './components/input'
+import MButton from './components/button'
+Vue.component(MForm.name, MForm)
+Vue.component(MFormItem.name, MFormItem)
+Vue.component(MInput.name, MInput)
+Vue.component(MButton.name, MButton)
 import './styles/font.css'
 import App from './App'
 

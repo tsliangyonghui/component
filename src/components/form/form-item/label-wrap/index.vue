@@ -1,11 +1,3 @@
-<template>
-  <div v-if="isAutoWidth" class="el-form-item__label-wrap" :style="style">
-    <slot></slot>
-  </div>
-  <div v-else>
-    <slot></slot>
-  </div>
-</template>
 <script>
 export default {
   name: 'MLabelWrap',
@@ -14,12 +6,35 @@ export default {
     updateAll: Boolean
   },
   inject: ['mForm', 'mFormItem'],
+  render() {
+    const slots = this.$slots.default
+    if (!slots) return null
+    if (this.isAutoWidth) {
+      const autoLabelWidth = this.elForm.autoLabelWidth
+      const style = {}
+      if (autoLabelWidth && autoLabelWidth !== 'auto') {
+        const marginLeft = parseInt(autoLabelWidth, 10) - this.computedWidth
+        if (marginLeft) {
+          style.marginLeft = marginLeft + 'px'
+        }
+      }
+      return (<div class='el-form-item__label-wrap' style={style}>
+        { slots }
+      </div>)
+    } else {
+      return slots[0]
+    }
+  },
+  data() {
+    return {
+      computedWidth: 0
+    }
+  },
   computed: {
     style() {
       const autoLabelWidth = this.mForm.autoLabelWidth
       const style = {}
       if (autoLabelWidth && autoLabelWidth !== 'auto') {
-        debugger
         const marginLeft = parseInt(autoLabelWidth, 10) - this.computedWidth
         if (marginLeft) {
           style.marginLeft = marginLeft + 'px'
@@ -30,7 +45,6 @@ export default {
   },
   watch: {
     computedWidth(val, oldVal) {
-      debugger
       if (this.updateAll) {
         this.mForm.registerLabelWidth(val, oldVal)
         this.mFormItem.updateComputedLabelWidth(val)
@@ -48,7 +62,6 @@ export default {
     },
     updateLabelWidth(action = 'update') {
       if (this.$slots.default && this.isAutoWidth && this.$el.firstElementChild) {
-        debugger
         if (action === 'update') {
           this.computedWidth = this.getLabelWidth()
         } else if (action === 'remove') {
@@ -58,17 +71,14 @@ export default {
     }
   },
   mounted() {
-    debugger
     this.updateLabelWidth('update')
   },
 
   updated() {
-    debugger
     this.updateLabelWidth('update')
   },
 
   beforeDestroy() {
-    debugger
     this.updateLabelWidth('remove')
   }
 }

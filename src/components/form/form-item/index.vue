@@ -67,7 +67,9 @@ export default {
   },
   data() {
     return {
-      validateState: ''
+      validateState: '',
+      computedLabelWidth: '',
+      isNested: false
     }
   },
   computed: {
@@ -88,19 +90,19 @@ export default {
     },
     contentStyle() {
       const ret = {}
-      // const label = this.label
-      // if (this.form.labelPosition === 'top' || this.form.inline) return ret
-      // if (!label && !this.labelWidth && this.isNested) return ret
-      // const labelWidth = this.labelWidth || this.form.labelWidth
-      // if (labelWidth === 'auto') {
-      //   if (this.labelWidth === 'auto') {
-      //     ret.marginLeft = this.computedLabelWidth
-      //   } else if (this.form.labelWidth === 'auto') {
-      //     ret.marginLeft = this.elForm.autoLabelWidth
-      //   }
-      // } else {
-      //   ret.marginLeft = labelWidth
-      // }
+      const label = this.label
+      if (this.form.labelPosition === 'top' || this.form.inline) return ret
+      if (!label && !this.labelWidth && this.isNested) return ret
+      const labelWidth = this.labelWidth || this.form.labelWidth
+      if (labelWidth === 'auto') {
+        if (this.labelWidth === 'auto') {
+          ret.marginLeft = this.computedLabelWidth
+        } else if (this.form.labelWidth === 'auto') {
+          ret.marginLeft = this.mForm.autoLabelWidth
+        }
+      } else {
+        ret.marginLeft = labelWidth
+      }
       return ret
     },
     labelFor() {
@@ -117,6 +119,11 @@ export default {
         parentName = parent.$options.componentName
       }
       return parent
+    }
+  },
+  methods: {
+    updateComputedLabelWidth(width) {
+      this.computedLabelWidth = width ? `${width}px` : ''
     }
   }
 }
@@ -139,5 +146,37 @@ export default {
 
 .el-form-item .el-form-item {
   margin-bottom: 0;
+}
+.el-form-item__label-wrap {
+    float: left
+}
+.el-form-item__label-wrap .el-form-item__label {
+    display: inline-block;
+    float: none
+}
+.el-form-item__label {
+    text-align: right;
+    vertical-align: middle;
+    float: left;
+    font-size: 14px;
+    color: #606266;
+    line-height: 40px;
+    padding: 0 12px 0 0;
+    box-sizing: border-box
+}
+.el-form-item__content {
+    line-height: 40px;
+    position: relative;
+    font-size: 14px
+}
+.el-form-item__content:after,.el-form-item__content:before {
+    display: table;
+    content: ""
+}
+.el-form-item__content:after {
+    clear: both
+}
+.el-form-item__content .el-input-group {
+    vertical-align: top
 }
 </style>

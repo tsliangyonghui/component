@@ -65,7 +65,6 @@ export default {
       return index
     },
     registerLabelWidth(val, oldVal) {
-      debugger
       if (val && oldVal) {
         const index = this.getLabelWidthIndex(oldVal)
         this.potentialLabelWidthArr.splice(index, 1, val)
@@ -82,4 +81,23 @@ export default {
 </script>
 
 <style>
+.el-form--inline .el-form-item {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: top
+}
+
+.el-form--inline .el-form-item__label {
+    float: none;
+    display: inline-block
+}
+
+.el-form--inline .el-form-item__content {
+    display: inline-block;
+    vertical-align: top
+}
+
+.el-form--inline.el-form--label-top .el-form-item__content {
+    display: block
+}
 </style>
