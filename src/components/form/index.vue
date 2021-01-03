@@ -76,6 +76,18 @@ export default {
       const index = this.getLabelWidthIndex(val)
       this.potentialLabelWidthArr.splice(index, 1)
     }
+  },
+  created() {
+    this.$on('m.form.addField', (field) => {
+      if (field) {
+        this.fields.push(field)
+      }
+    })
+    this.$on('m.form.removeField', (field) => {
+      if (field.prop) {
+        this.fields.splice(this.fields.indexOf(field), 1)
+      }
+    })
   }
 }
 </script>

@@ -32,10 +32,14 @@
 </template>
 
 <script>
+import Emitter from '@/mixins/emitter'
+import { getPropByPath, noop } from '@/utils/util'
+import objectAssign from '@/utils/merge'
 import LabelWrap from './label-wrap'
 export default {
   name: 'MFormItem',
   componentName: 'MFormItem',
+  mixins: [Emitter],
   components: { LabelWrap },
   provide() {
     return {
@@ -69,7 +73,8 @@ export default {
     return {
       validateState: '',
       computedLabelWidth: '',
-      isNested: false
+      isNested: false,
+      validateDisabled: false
     }
   },
   computed: {
@@ -119,11 +124,106 @@ export default {
         parentName = parent.$options.componentName
       }
       return parent
+    },
+    fieldValue() {
+      const model = this.form.model
+      if (!model || !this.prop) { return }
+
+      let path = this.prop
+      if (path.indexOf(':') !== -1) {
+        path = path.replace(/:/, '.')
+      }
+      return getPropByPath(model, path, true).v
     }
   },
   methods: {
+    getFilteredRule(trigger) {
+      const rules = this.getRules()
+
+      return rules.filter(rule => {
+        if (!rule.trigger || trigger === '') return true
+        if (Array.isArray(rule.trigger)) {
+          return rule.trigger.indexOf(trigger) > -1
+        } else {
+          return rule.trigger === trigger
+        }
+      }).map(rule => objectAssign({}, rule))
+    },
+    validate(trigger, callback = noop) {
+      debugger
+      this.validateDisabled = false
+      const rules = this.getFilteredRule(trigger)
+      if ((!rules || rules.length === 0) && this.required === undefined) {
+        callback()
+        return true
+      }
+
+      this.validateState = 'validating'
+
+      const descriptor = {}
+      if (rules && rules.length > 0) {
+        rules.forEach(rule => {
+          delete rule.trigger
+        })
+      }
+      descriptor[this.prop] = rules
+
+      const validator = new AsyncValidator(descriptor)
+      const model = {}
+
+      model[this.prop] = this.fieldValue
+
+      validator.validate(model, { firstFields: true }, (errors, invalidFields) => {
+        this.validateState = !errors ? 'success' : 'error'
+        this.validateMessage = errors ? errors[0].message : ''
+
+        callback(this.validateMessage, invalidFields)
+        this.elForm && this.elForm.$emit('validate', this.prop, !errors, this.validateMessage || null)
+      })
+    },
+    getRules() {
+      let formRules = this.form.rules
+      const selfRules = this.rules
+      const requiredRule = this.required !== undefined ? { required: !!this.required } : []
+
+      const prop = getPropByPath(formRules, this.prop || '')
+      formRules = formRules ? (prop.o[this.prop || ''] || prop.v) : []
+
+      var ret = [].concat(selfRules || formRules || []).concat(requiredRule)
+      return ret
+    },
+    onFieldBlur() {
+      this.validate('blur')
+    },
+    onFieldChange() {
+      if (this.validateDisabled) {
+        this.validateDisabled = false
+        return
+      }
+      this.validate('change')
+    },
+    addValidateEvents() {
+      const rules = this.getRules()
+      if (rules.length || this.required !== undefined) {
+        this.$on('m.form.blur', this.onFieldBlur)
+        this.$on('m.form.change', this.onFieldChange)
+      }
+    },
     updateComputedLabelWidth(width) {
       this.computedLabelWidth = width ? `${width}px` : ''
+    }
+  },
+  mounted() {
+    if (this.prop) {
+      this.dispatch('MForm', 'm.form.addField', [this])
+      let initialValue = this.fieldValue
+      if (Array.isArray(initialValue)) {
+        initialValue = [].concat(initialValue)
+      }
+      Object.defineProperty(this, 'initialValue', {
+        value: initialValue
+      })
+      this.addValidateEvents()
     }
   }
 }

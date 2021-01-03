@@ -58,10 +58,10 @@ export default {
   componentName: 'MInput',
   mixins: [Emitter],
   inject: {
-    elForm: {
+    mForm: {
       default: ''
     },
-    elFormItem: {
+    mFormItem: {
       default: ''
     }
   },
@@ -157,10 +157,10 @@ export default {
         (!!this.nativeInputValue || this.focused)
     },
     validateState() {
-      return this.elFormItem ? this.elFormItem.validateState : ''
+      return this.mFormItem ? this.mFormItem.validateState : ''
     },
     inputSize() {
-      return this.size || this._elFormItemSize
+      return this.size || this._mFormItemSize
     },
     inputDisabled() {
       return this.disabled || (this.elForm || {}).disabled
@@ -207,7 +207,7 @@ export default {
       this.focused = false
       this.$emit('blur', event)
       if (this.validateEvent) {
-        this.dispatch('ElFormItem', 'el.form.blur', [this.currentValue])
+        this.dispatch('MFormItem', 'm.form.blur', [this.currentValue])
       }
     },
     handleFocus(event) {
@@ -234,7 +234,7 @@ export default {
       if (this.isOnComposition) return
       this.$nextTick(this.resizeTextarea)
       if (this.validateEvent && this.currentValue === this.value) {
-        this.dispatch('ElFormItem', 'el.form.change', [value])
+        this.dispatch('MFormItem', 'm.form.change', [value])
       }
     },
     handleInput(event) {
