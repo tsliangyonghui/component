@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import objectAssign from '@/utils/merge'
 export default {
   name: 'MForm',
   componentName: 'MForm',
@@ -57,6 +58,45 @@ export default {
     }
   },
   methods: {
+    validate(callback) {
+      if (!this.model) {
+        console.warn('[Element Warn][Form]model is required for validate to work!')
+        return
+      }
+
+      let promise
+      // if no callback, return promise
+      if (typeof callback !== 'function' && window.Promise) {
+        promise = new window.Promise((resolve, reject) => {
+          callback = function (valid) {
+            valid ? resolve(valid) : reject(valid)
+          }
+        })
+      }
+
+      let valid = true
+      let count = 0
+      // 如果需要验证的fields为空，调用验证时立刻返回callback
+      if (this.fields.length === 0 && callback) {
+        callback(true)
+      }
+      let invalidFields = {}
+      this.fields.forEach(field => {
+        field.validate('', (message, field) => {
+          if (message) {
+            valid = false
+          }
+          invalidFields = objectAssign({}, invalidFields, field)
+          if (typeof callback === 'function' && ++count === this.fields.length) {
+            callback(valid, invalidFields)
+          }
+        })
+      })
+
+      if (promise) {
+        return promise
+      }
+    },
     getLabelWidthIndex(width) {
       const index = this.potentialLabelWidthArr.indexOf(width)
       if (index === -1) {
@@ -94,22 +134,22 @@ export default {
 
 <style>
 .el-form--inline .el-form-item {
-    display: inline-block;
-    margin-right: 10px;
-    vertical-align: top
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: top;
 }
 
 .el-form--inline .el-form-item__label {
-    float: none;
-    display: inline-block
+  float: none;
+  display: inline-block;
 }
 
 .el-form--inline .el-form-item__content {
-    display: inline-block;
-    vertical-align: top
+  display: inline-block;
+  vertical-align: top;
 }
 
 .el-form--inline.el-form--label-top .el-form-item__content {
-    display: block
+  display: block;
 }
 </style>

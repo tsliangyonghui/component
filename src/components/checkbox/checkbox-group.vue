@@ -5,13 +5,13 @@
 </template>
 
 <script>
-import Emitter from 'element-ui/src/mixins/emitter'
+import Emitter from '@/mixins/emitter'
 export default {
   name: 'MCheckboxGroup',
   componentName: 'MCheckboxGroup',
   mixins: [Emitter],
   inject: {
-    elFormItem: {
+    mFormItem: {
       default: ''
     }
   },
@@ -27,16 +27,16 @@ export default {
 
   computed: {
     _elFormItemSize() {
-      return (this.elFormItem || {}).elFormItemSize
+      return (this.mFormItem || {}).mFormItemSize
     },
     checkboxGroupSize() {
-      return this.size || this._elFormItemSize
+      return this.size || this._mFormItemSize
     }
   },
 
   watch: {
     value(value) {
-      this.dispatch('ElFormItem', 'el.form.change', [value])
+      this.dispatch('MFormItem', 'm.form.change', [value])
     }
   }
 }

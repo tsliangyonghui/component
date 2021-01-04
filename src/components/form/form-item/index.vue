@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import AsyncValidator from 'async-validator'
 import Emitter from '@/mixins/emitter'
 import { getPropByPath, noop } from '@/utils/util'
 import objectAssign from '@/utils/merge'
@@ -79,7 +80,19 @@ export default {
   },
   computed: {
     isRequired() {
-      return false
+      const rules = this.getRules()
+      let isRequired = false
+
+      if (rules && rules.length) {
+        rules.every(rule => {
+          if (rule.required) {
+            isRequired = true
+            return false
+          }
+          return true
+        })
+      }
+      return isRequired
     },
     labelStyle() {
       const ret = {}
@@ -150,16 +163,13 @@ export default {
       }).map(rule => objectAssign({}, rule))
     },
     validate(trigger, callback = noop) {
-      debugger
       this.validateDisabled = false
       const rules = this.getFilteredRule(trigger)
       if ((!rules || rules.length === 0) && this.required === undefined) {
         callback()
         return true
       }
-
       this.validateState = 'validating'
-
       const descriptor = {}
       if (rules && rules.length > 0) {
         rules.forEach(rule => {
@@ -167,18 +177,13 @@ export default {
         })
       }
       descriptor[this.prop] = rules
-
       const validator = new AsyncValidator(descriptor)
       const model = {}
-
       model[this.prop] = this.fieldValue
-
       validator.validate(model, { firstFields: true }, (errors, invalidFields) => {
         this.validateState = !errors ? 'success' : 'error'
         this.validateMessage = errors ? errors[0].message : ''
-
         callback(this.validateMessage, invalidFields)
-        this.elForm && this.elForm.$emit('validate', this.prop, !errors, this.validateMessage || null)
       })
     },
     getRules() {
@@ -248,35 +253,82 @@ export default {
   margin-bottom: 0;
 }
 .el-form-item__label-wrap {
-    float: left
+  float: left;
 }
 .el-form-item__label-wrap .el-form-item__label {
-    display: inline-block;
-    float: none
+  display: inline-block;
+  float: none;
 }
 .el-form-item__label {
-    text-align: right;
-    vertical-align: middle;
-    float: left;
-    font-size: 14px;
-    color: #606266;
-    line-height: 40px;
-    padding: 0 12px 0 0;
-    box-sizing: border-box
+  text-align: right;
+  vertical-align: middle;
+  float: left;
+  font-size: 14px;
+  color: #606266;
+  line-height: 40px;
+  padding: 0 12px 0 0;
+  box-sizing: border-box;
 }
 .el-form-item__content {
-    line-height: 40px;
-    position: relative;
-    font-size: 14px
+  line-height: 40px;
+  position: relative;
+  font-size: 14px;
 }
-.el-form-item__content:after,.el-form-item__content:before {
-    display: table;
-    content: ""
+.el-form-item__content:after,
+.el-form-item__content:before {
+  display: table;
+  content: "";
 }
 .el-form-item__content:after {
-    clear: both
+  clear: both;
 }
 .el-form-item__content .el-input-group {
-    vertical-align: top
+  vertical-align: top;
+}
+.el-form-item.is-required:not(.is-no-asterisk)
+  .el-form-item__label-wrap
+  > .el-form-item__label:before,
+.el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
+  content: "*";
+  color: #f56c6c;
+  margin-right: 4px;
+}
+
+.el-form-item.is-error .el-input__inner,
+.el-form-item.is-error .el-input__inner:focus,
+.el-form-item.is-error .el-textarea__inner,
+.el-form-item.is-error .el-textarea__inner:focus {
+  border-color: #f56c6c;
+}
+.el-form-item__error {
+  color: #f56c6c;
+  font-size: 12px;
+  line-height: 1;
+  padding-top: 4px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+.el-form-item__error--inline {
+  position: relative;
+  top: auto;
+  left: auto;
+  display: inline-block;
+  margin-left: 10px;
+}
+.el-zoom-in-top-enter-active,
+.el-zoom-in-top-leave-active {
+  opacity: 1;
+  transform: scaleY(1);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-origin: center top;
+}
+
+.el-zoom-in-top-enter,
+.el-zoom-in-top-leave-active {
+  opacity: 0;
+  transform: scaleY(0);
 }
 </style>
