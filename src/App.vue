@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <m-form ref="form" :model="form" label-width="80px">
-      <m-form-item label="名称" prop="name" :rules="[
-          
-            { validator: validatePass, trigger: 'blur' }
-          ]">
-        <m-input v-model="form.name" placeholder="请选择日期"></m-input>
+      <m-form-item label="名称" prop="name"   :rules="[
+      { required: true, message: '年龄不能为空'},
+      { type: 'number', message: '年龄必须为数字值'}
+    ]">
+        <m-input v-model.number="form.name" placeholder="请选择日期"></m-input>
       </m-form-item>
       <m-form-item label="名称名称" prop="type" :rules="[
             { required: true, message: '请输入活动名称', trigger: 'change' }
@@ -32,8 +32,8 @@ export default {
   data() {
     return {
       form: {
-        name: '',
-        type: []
+        name: '12',
+        type: ['地推活动']
       }
     }
   },
@@ -44,7 +44,7 @@ export default {
   },
   methods: {
     onClick() {
-      this.$refs.form.validate((a, b) => {
+      this.$refs.form.resetFields((a, b) => {
       })
     },
     validatePass(rule, value, callback) {

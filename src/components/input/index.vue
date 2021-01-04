@@ -176,10 +176,23 @@ export default {
       return merge({}, this.textareaCalcStyle, { resize: this.resize })
     }
   },
-  mounted() {
-    this.resizeTextarea()
+  watch: {
+    nativeInputValue() {
+      this.setNativeInputValue()
+    },
+    value(val) {
+      if (this.validateEvent) {
+        this.dispatch('MFormItem', 'm.form.change', [val])
+      }
+    }
   },
   methods: {
+    setNativeInputValue() {
+      const input = this.getInput()
+      if (!input) return
+      if (input.value === this.nativeInputValue) return
+      input.value = this.nativeInputValue
+    },
     resizeTextarea() {
       const { autosize, type } = this
       if (type !== 'textarea') return
@@ -242,6 +255,7 @@ export default {
       this.setCurrentValue(value)
       if (this.isOnComposition) return
       this.$emit('input', value)
+      this.$nextTick(this.setNativeInputValue)
     },
     handleChange(event) {
       this.$emit('change', event.target.value)
@@ -268,6 +282,10 @@ export default {
       this.$emit('clear')
       this.setCurrentValue('')
     }
+  },
+  mounted() {
+    this.setNativeInputValue()
+    this.resizeTextarea()
   }
 }
 </script>

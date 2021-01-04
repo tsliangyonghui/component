@@ -150,6 +150,33 @@ export default {
     }
   },
   methods: {
+    resetField() {
+      this.validateState = ''
+      this.validateMessage = ''
+
+      const model = this.form.model
+      const value = this.fieldValue
+      let path = this.prop
+      if (path.indexOf(':') !== -1) {
+        path = path.replace(/:/, '.')
+      }
+
+      const prop = getPropByPath(model, path, true)
+
+      this.validateDisabled = true
+      if (Array.isArray(value)) {
+        prop.o[prop.k] = [].concat(this.initialValue)
+      } else {
+        prop.o[prop.k] = this.initialValue
+      }
+
+      // reset validateDisabled after onFieldChange triggered
+      this.$nextTick(() => {
+        this.validateDisabled = false
+      })
+
+      this.broadcast('MTimeSelect', 'fieldReset', this.initialValue)
+    },
     getFilteredRule(trigger) {
       const rules = this.getRules()
 

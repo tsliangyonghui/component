@@ -58,6 +58,15 @@ export default {
     }
   },
   methods: {
+    resetFields() {
+      if (!this.model) {
+        console.warn('[Element Warn][Form]model is required for resetFields to work.')
+        return
+      }
+      this.fields.forEach(field => {
+        field.resetField()
+      })
+    },
     validate(callback) {
       if (!this.model) {
         console.warn('[Element Warn][Form]model is required for validate to work!')
