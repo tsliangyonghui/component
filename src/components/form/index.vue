@@ -57,6 +57,19 @@ export default {
       return max ? `${max}px` : ''
     }
   },
+  watch: {
+    rules() {
+      // remove then add event listeners on form-item after form rules change
+      this.fields.forEach(field => {
+        field.removeValidateEvents()
+        field.addValidateEvents()
+      })
+
+      if (this.validateOnRuleChange) {
+        this.validate(() => {})
+      }
+    }
+  },
   methods: {
     resetFields() {
       if (!this.model) {
@@ -124,6 +137,30 @@ export default {
     deregisterLabelWidth(val) {
       const index = this.getLabelWidthIndex(val)
       this.potentialLabelWidthArr.splice(index, 1)
+    },
+    validateField(props, cb) {
+      props = [].concat(props)
+      const fields = this.fields.filter(field => {
+        return props.indexOf(field.prop) !== -1
+      })
+      if (!fields.length) {
+        console.warn('[Element Warn]please pass correct props!')
+        return
+      }
+
+      fields.forEach(field => {
+        field.validate('', cb)
+      })
+    },
+    clearValidate(props = []) {
+      const fields = props.length
+        ? (typeof props === 'string'
+          ? this.fields.filter(field => props === field.prop)
+          : this.fields.filter(field => props.indexOf(field.prop) > -1)
+        ) : this.fields
+      fields.forEach(field => {
+        field.clearValidate()
+      })
     }
   },
   created() {

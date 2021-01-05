@@ -15,12 +15,12 @@
           <m-checkbox label="地推活动" name="type"></m-checkbox>
         </m-checkbox-group>
       </m-form-item>
-      <!-- <m-form-item label="名称名称">
+      <m-form-item label="名称名称">
          <m-radio-group v-model="form.resource">
           <m-radio label="线上品牌商赞助"></m-radio>
           <m-radio label="线下场地免费"></m-radio>
         </m-radio-group>
-      </m-form-item> -->
+      </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
   </div>
@@ -32,8 +32,8 @@ export default {
   data() {
     return {
       form: {
-        name: '12',
-        type: ['地推活动']
+        name: '',
+        type: []
       }
     }
   },
@@ -44,7 +44,10 @@ export default {
   },
   methods: {
     onClick() {
-      this.$refs.form.resetFields((a, b) => {
+      this.$refs.form.validateField('name', (a, b) => {
+        setTimeout(() => {
+          this.$refs.form.clearValidate('name')
+        }, 1000)
       })
     },
     validatePass(rule, value, callback) {

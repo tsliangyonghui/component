@@ -177,6 +177,11 @@ export default {
 
       this.broadcast('MTimeSelect', 'fieldReset', this.initialValue)
     },
+    clearValidate() {
+      this.validateState = ''
+      this.validateMessage = ''
+      this.validateDisabled = false
+    },
     getFilteredRule(trigger) {
       const rules = this.getRules()
 
@@ -211,6 +216,7 @@ export default {
         this.validateState = !errors ? 'success' : 'error'
         this.validateMessage = errors ? errors[0].message : ''
         callback(this.validateMessage, invalidFields)
+        this.mForm && this.mForm.$emit('validate', this.prop, !errors, this.validateMessage || null)
       })
     },
     getRules() {
@@ -233,6 +239,9 @@ export default {
         return
       }
       this.validate('change')
+    },
+    removeValidateEvents() {
+      this.$off()
     },
     addValidateEvents() {
       const rules = this.getRules()
