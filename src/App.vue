@@ -15,11 +15,8 @@
           <m-checkbox label="地推活动" name="type"></m-checkbox>
         </m-checkbox-group>
       </m-form-item>
-      <m-form-item label="名称名称">
-         <m-radio-group v-model="form.resource">
-          <m-radio label="线上品牌商赞助"></m-radio>
-          <m-radio label="线下场地免费"></m-radio>
-        </m-radio-group>
+      <m-form-item label="名称名称1">
+        <m-input-number />
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>

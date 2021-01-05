@@ -2,6 +2,7 @@ import Vue from 'vue'
 import MForm from './components/form'
 import MFormItem from './components/form/form-item'
 import MInput from './components/input'
+import MInputNumber from './components/input-number'
 import MButton from './components/button'
 import MCheckbox from './components/checkbox'
 import MCheckboxGroup from './components/checkbox/checkbox-group'
@@ -17,6 +18,7 @@ Vue.component(MRadio.name, MRadio)
 Vue.component(MCheckboxGroup.name, MCheckboxGroup)
 Vue.component(MRadioButton.name, MRadioButton)
 Vue.component(MRadioGroup.name, MRadioGroup)
+Vue.component(MInputNumber.name, MInputNumber)
 import './styles/font.css'
 import App from './App'
 
