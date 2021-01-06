@@ -1,4 +1,4 @@
-import { once, on } from 'element-ui/src/utils/dom'
+import { once, on } from '@/utils/dom'
 
 export default {
   bind(el, binding, vnode) {
@@ -12,7 +12,6 @@ export default {
       clearInterval(interval)
       interval = null
     }
-
     on(el, 'mousedown', (e) => {
       if (e.button !== 0) return
       startTime = Date.now()

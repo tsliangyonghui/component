@@ -84,9 +84,7 @@ export default {
       if (this.userInput !== null) {
         return this.userInput
       }
-
       let currentValue = this.currentValue
-
       if (typeof currentValue === 'number') {
         if (this.stepStrictly) {
           const stepPrecision = this.getPrecision(this.step)
@@ -127,6 +125,34 @@ export default {
     },
     inputNumberSize() {
       return this.size || this._mFormItemSize
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(value) {
+        let newVal = value === undefined ? value : Number(value)
+        if (newVal !== undefined) {
+          if (isNaN(newVal)) {
+            return
+          }
+
+          if (this.stepStrictly) {
+            const stepPrecision = this.getPrecision(this.step)
+            const precisionFactor = Math.pow(10, stepPrecision)
+            newVal = Math.round(newVal / this.step) * precisionFactor * this.step / precisionFactor
+          }
+
+          if (this.precision !== undefined) {
+            newVal = this.toPrecision(newVal, this.precision)
+          }
+        }
+        if (newVal >= this.max) newVal = this.max
+        if (newVal <= this.min) newVal = this.min
+        this.currentValue = newVal
+        this.userInput = null
+        this.$emit('input', newVal)
+      }
     }
   },
   methods: {
@@ -185,21 +211,24 @@ export default {
       const value = this.value || 0
       const newVal = this._decrease(value, this.step)
       this.setCurrentValue(newVal)
+    },
+    setCurrentValue(newVal) {
+      const oldVal = this.currentValue
+      if (typeof newVal === 'number' && this.precision !== undefined) {
+        newVal = this.toPrecision(newVal, this.precision)
+      }
+      if (newVal >= this.max) newVal = this.max
+      if (newVal <= this.min) newVal = this.min
+      if (oldVal === newVal) return
+      this.userInput = null
+      this.$emit('input', newVal)
+      this.$emit('change', newVal, oldVal)
+      this.currentValue = newVal
     }
   },
   mounted() {
-    debugger
     const innerInput = this.$refs.input.$refs.input
     innerInput.setAttribute('role', 'spinbutton')
-    innerInput.setAttribute('aria-valuemax', this.max)
-    innerInput.setAttribute('aria-valuemin', this.min)
-    innerInput.setAttribute('aria-valuenow', this.currentValue)
-    innerInput.setAttribute('aria-disabled', this.inputNumberDisabled)
-  },
-  updated() {
-    if (!this.$refs || !this.$refs.input) return
-    const innerInput = this.$refs.input.$refs.input
-    innerInput.setAttribute('aria-valuenow', this.currentValue)
   }
 }
 </script>
