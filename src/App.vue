@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <m-form ref="form" :model="form" label-width="80px">
-      <m-form-item label="名称" prop="name"   :rules="[
+      <m-form-item label="名称" prop="name" :rules="[
       { required: true, message: '年龄不能为空'},
       { type: 'number', message: '年龄必须为数字值'}
     ]">
@@ -15,8 +15,8 @@
           <m-checkbox label="地推活动" name="type"></m-checkbox>
         </m-checkbox-group>
       </m-form-item>
-      <m-form-item label="名称名称1">
-        <m-input-number />
+      <m-form-item label="数量">
+        <m-input-number v-model="form.num" />
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
@@ -30,7 +30,8 @@ export default {
     return {
       form: {
         name: '',
-        type: []
+        type: [],
+        num: 3
       }
     }
   },

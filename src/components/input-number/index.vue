@@ -1,53 +1,25 @@
 <template>
-  <div
-    @dragstart.prevent
-    :class="[
+  <div @dragstart.prevent :class="[
       'el-input-number',
       inputNumberSize ? 'el-input-number--' + inputNumberSize : '',
       { 'is-disabled': inputNumberDisabled },
       { 'is-without-controls': !controls },
       { 'is-controls-right': controlsAtRight }
     ]">
-    <span
-      class="el-input-number__decrease"
-      role="button"
-      v-if="controls"
-      v-repeat-click="decrease"
-      :class="{'is-disabled': minDisabled}"
-      @keydown.enter="decrease">
+    <span class="el-input-number__decrease" role="button" v-if="controls" v-repeat-click="decrease" :class="{'is-disabled': minDisabled}" @keydown.enter="decrease">
       <i :class="`el-icon-${controlsAtRight ? 'arrow-down' : 'minus'}`"></i>
     </span>
-    <span
-      class="el-input-number__increase"
-      role="button"
-      v-if="controls"
-      v-repeat-click="increase"
-      :class="{'is-disabled': maxDisabled}"
-      @keydown.enter="increase">
+    <span class="el-input-number__increase" role="button" v-if="controls" v-repeat-click="increase" :class="{'is-disabled': maxDisabled}" @keydown.enter="increase">
       <i :class="`el-icon-${controlsAtRight ? 'arrow-up' : 'plus'}`"></i>
     </span>
-    <el-input
-      ref="input"
-      :value="displayValue"
-      :placeholder="placeholder"
-      :disabled="inputNumberDisabled"
-      :size="inputNumberSize"
-      :max="max"
-      :min="min"
-      :name="name"
-      :label="label"
-      @keydown.up.native.prevent="increase"
-      @keydown.down.native.prevent="decrease"
-      @blur="handleBlur"
-      @focus="handleFocus"
-      @input="handleInput"
-      @change="handleInputChange">
-    </el-input>
+    <m-input ref="input" :value="displayValue" :placeholder="placeholder" :disabled="inputNumberDisabled" :size="inputNumberSize" :max="max" :min="min" :name="name" :label="label" @keydown.up.native.prevent="increase" @keydown.down.native.prevent="decrease" @blur="handleBlur" @focus="handleFocus" @input="handleInput" @change="handleInputChange">
+    </m-input>
   </div>
 </template>
 
 <script>
 import Focus from '@/mixins/focus'
+import RepeatClick from '@/directives/repeat-click'
 export default {
   name: 'MInputNumber',
   componentName: 'MInputNumber',
@@ -59,6 +31,9 @@ export default {
     mFormItem: {
       default: ''
     }
+  },
+  directives: {
+    repeatClick: RepeatClick
   },
   props: {
     step: {
@@ -103,10 +78,206 @@ export default {
       currentValue: 0,
       userInput: null
     }
+  },
+  computed: {
+    displayValue() {
+      if (this.userInput !== null) {
+        return this.userInput
+      }
+
+      let currentValue = this.currentValue
+
+      if (typeof currentValue === 'number') {
+        if (this.stepStrictly) {
+          const stepPrecision = this.getPrecision(this.step)
+          const precisionFactor = Math.pow(10, stepPrecision)
+          currentValue = Math.round(currentValue / this.step) * precisionFactor * this.step / precisionFactor
+        }
+
+        if (this.precision !== undefined) {
+          currentValue = currentValue.toFixed(this.precision)
+        }
+      }
+
+      return currentValue
+    },
+    maxDisabled() {
+      return this._increase(this.value, this.step) > this.max
+    },
+    numPrecision() {
+      const { value, step, getPrecision, precision } = this
+      const stepPrecision = getPrecision(step)
+      if (precision !== undefined) {
+        if (stepPrecision > precision) {
+          console.warn('[Element Warn][InputNumber]precision should not be less than the decimal places of step')
+        }
+        return precision
+      } else {
+        return Math.max(getPrecision(value), stepPrecision)
+      }
+    },
+    minDisabled() {
+      return this._decrease(this.value, this.step) < this.min
+    },
+    controlsAtRight() {
+      return this.controls && this.controlsPosition === 'right'
+    },
+    inputNumberDisabled() {
+      return this.disabled || !!(this.mForm || {}).disabled
+    },
+    inputNumberSize() {
+      return this.size || this._mFormItemSize
+    }
+  },
+  methods: {
+    handleBlur(event) {
+      this.$emit('blur', event)
+    },
+    handleFocus(event) {
+      this.$emit('focus', event)
+    },
+    handleInput(value) {
+      this.userInput = value
+    },
+    handleInputChange(value) {
+      const newVal = value === '' ? undefined : Number(value)
+      if (!isNaN(newVal) || value === '') {
+        this.setCurrentValue(newVal)
+      }
+      this.userInput = null
+    },
+    increase() {
+      if (this.inputNumberDisabled || this.maxDisabled) return
+      const value = this.value || 0
+      const newVal = this._increase(value, this.step)
+      this.setCurrentValue(newVal)
+    },
+    toPrecision(num, precision) {
+      if (precision === undefined) precision = this.numPrecision
+      return parseFloat(Math.round(num * Math.pow(10, precision)) / Math.pow(10, precision))
+    },
+    getPrecision(value) {
+      if (value === undefined) return 0
+      const valueString = value.toString()
+      const dotPosition = valueString.indexOf('.')
+      let precision = 0
+      if (dotPosition !== -1) {
+        precision = valueString.length - dotPosition - 1
+      }
+      return precision
+    },
+    _increase(val, step) {
+      if (typeof val !== 'number' && val !== undefined) return this.currentValue
+
+      const precisionFactor = Math.pow(10, this.numPrecision)
+      // Solve the accuracy problem of JS decimal calculation by converting the value to integer.
+      return this.toPrecision((precisionFactor * val + precisionFactor * step) / precisionFactor)
+    },
+    _decrease(val, step) {
+      if (typeof val !== 'number' && val !== undefined) return this.currentValue
+
+      const precisionFactor = Math.pow(10, this.numPrecision)
+
+      return this.toPrecision((precisionFactor * val - precisionFactor * step) / precisionFactor)
+    },
+    decrease() {
+      if (this.inputNumberDisabled || this.minDisabled) return
+      const value = this.value || 0
+      const newVal = this._decrease(value, this.step)
+      this.setCurrentValue(newVal)
+    }
+  },
+  mounted() {
+    debugger
+    const innerInput = this.$refs.input.$refs.input
+    innerInput.setAttribute('role', 'spinbutton')
+    innerInput.setAttribute('aria-valuemax', this.max)
+    innerInput.setAttribute('aria-valuemin', this.min)
+    innerInput.setAttribute('aria-valuenow', this.currentValue)
+    innerInput.setAttribute('aria-disabled', this.inputNumberDisabled)
+  },
+  updated() {
+    if (!this.$refs || !this.$refs.input) return
+    const innerInput = this.$refs.input.$refs.input
+    innerInput.setAttribute('aria-valuenow', this.currentValue)
   }
 }
 </script>
 
 <style>
+.el-input-number {
+  position: relative;
+  display: inline-block;
+  width: 180px;
+  line-height: 38px;
+}
 
+.el-input-number .el-input {
+  display: block;
+}
+
+.el-input-number .el-input__inner {
+  -webkit-appearance: none;
+  padding-left: 50px;
+  padding-right: 50px;
+  text-align: center;
+}
+
+.el-input-number__decrease,
+.el-input-number__increase {
+  position: absolute;
+  z-index: 1;
+  top: 1px;
+  width: 40px;
+  height: auto;
+  text-align: center;
+  background: #f5f7fa;
+  color: #606266;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.el-input-number__decrease:hover,
+.el-input-number__increase:hover {
+  color: #409eff;
+}
+
+.el-input-number__decrease:hover:not(.is-disabled)
+  ~ .el-input
+  .el-input__inner:not(.is-disabled),
+.el-input-number__increase:hover:not(.is-disabled)
+  ~ .el-input
+  .el-input__inner:not(.is-disabled) {
+  border-color: #409eff;
+}
+
+.el-input-number__decrease.is-disabled,
+.el-input-number__increase.is-disabled {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.el-input-number__increase {
+  right: 1px;
+  border-radius: 0 4px 4px 0;
+  border-left: 1px solid #dcdfe6;
+}
+
+.el-input-number__decrease {
+  left: 1px;
+  border-radius: 4px 0 0 4px;
+  border-right: 1px solid #dcdfe6;
+}
+
+.el-input-number.is-disabled .el-input-number__decrease,
+.el-input-number.is-disabled .el-input-number__increase {
+  border-color: #e4e7ed;
+  color: #e4e7ed;
+}
+
+.el-input-number.is-disabled .el-input-number__decrease:hover,
+.el-input-number.is-disabled .el-input-number__increase:hover {
+  color: #e4e7ed;
+  cursor: not-allowed;
+}
 </style>
