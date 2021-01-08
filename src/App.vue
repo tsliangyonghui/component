@@ -16,7 +16,7 @@
         </m-checkbox-group>
       </m-form-item>
       <m-form-item label="数量">
-        <m-input-number v-model="form.num" />
+        <m-input-number v-model="form.num"  :step="1.20"  :max="10" />
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
@@ -39,6 +39,9 @@ export default {
 
   },
   watch: {
+    'form.num'(val) {
+      console.log(val)
+    }
   },
   methods: {
     onClick() {

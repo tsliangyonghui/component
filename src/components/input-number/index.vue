@@ -136,7 +136,6 @@ export default {
           if (isNaN(newVal)) {
             return
           }
-
           if (this.stepStrictly) {
             const stepPrecision = this.getPrecision(this.step)
             const precisionFactor = Math.pow(10, stepPrecision)
@@ -224,6 +223,9 @@ export default {
       this.$emit('input', newVal)
       this.$emit('change', newVal, oldVal)
       this.currentValue = newVal
+    },
+    select() {
+      this.$refs.input.select()
     }
   },
   mounted() {
