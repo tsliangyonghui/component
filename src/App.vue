@@ -15,9 +15,26 @@
           <m-checkbox label="地推活动" name="type"></m-checkbox>
         </m-checkbox-group>
       </m-form-item>
-      <m-form-item label="数量">
-        <m-input-number v-model="form.num"  :step="1.20"  :max="10" />
+      <m-form-item label="数量1">
+       <m-select v-model="form.select" placeholder="请选择">
+          <m-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </m-option>
+        </m-select>
       </m-form-item>
+      <!-- <m-form-item label="数量1">
+       <m-select v-model="form.select2" placeholder="请选择">
+          <m-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+          </m-option>
+        </m-select>
+      </m-form-item> -->
     </m-form>
     <m-button @click="onClick">确定</m-button>
   </div>
@@ -28,10 +45,27 @@ export default {
   name: 'App',
   data() {
     return {
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
       form: {
         name: '',
         type: [],
-        num: 3
+        num: 3,
+        select: ''
       }
     }
   },
