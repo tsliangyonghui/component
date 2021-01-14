@@ -1,17 +1,23 @@
 <template>
-<div
-    class="el-select"
-    :class="[selectSize ? 'el-select--' + selectSize : '']"
-    @click.stop="toggleMenu"
-    v-clickoutside="handleClose">
-    aa
+  <div class="el-select" :class="[selectSize ? 'el-select--' + selectSize : '']" @click.stop="toggleMenu" v-clickoutside="handleClose">
+    <m-input ref="reference" v-model="selectedLabel" type="text" :placeholder="currentPlaceholder" :name="name" :id="id" :autocomplete="autocomplete" :size="selectSize" :disabled="selectDisabled" :readonly="readonly" :validate-event="false" :class="{ 'is-focus': visible }" :tabindex="(multiple && filterable) ? '-1' : null" @focus="handleFocus" @blur="handleBlur" @keyup.native="debouncedOnInputChange" @keydown.native.down.stop.prevent="navigateOptions('next')" @keydown.native.up.stop.prevent="navigateOptions('prev')" @keydown.native.enter.prevent="selectOption" @keydown.native.esc.stop.prevent="visible = false" @keydown.native.tab="visible = false" @paste.native="debouncedOnInputChange" @mouseenter.native="inputHovering = true" @mouseleave.native="inputHovering = false">
+      <template slot="prefix" v-if="$slots.prefix">
+        <slot name="prefix"></slot>
+      </template>
+      <template slot="suffix">
+        <i v-show="!showClose" :class="['el-select__caret', 'el-input__icon', 'el-icon-' + iconClass]"></i>
+        <i v-if="showClose" class="el-select__caret el-input__icon el-icon-circle-close" @click="handleClearClick"></i>
+      </template>
+    </m-input>
   </div>
 </template>
 
 <script>
 import Locale from '@/mixins/locale'
+import { t } from '@/locale'
 import Focus from '@/mixins/focus'
 import Clickoutside from '@/utils/clickoutside'
+import debounce from 'throttle-debounce/debounce'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',
@@ -62,7 +68,6 @@ export default {
     placeholder: {
       type: String,
       default() {
-        debugger
         return t('el.select.placeholder')
       }
     },
@@ -82,12 +87,16 @@ export default {
     return {
       visible: false,
       currentPlaceholder: '',
+      cachedPlaceHolder: '',
       selectedLabel: '',
       options: [],
       query: ''
     }
   },
   computed: {
+    debounce() {
+      return this.remote ? 300 : 0
+    },
     emptyText() {
       if (this.loading) {
         return this.loadingText || this.t('el.select.loading')
@@ -115,9 +124,9 @@ export default {
         ? Array.isArray(this.value) && this.value.length > 0
         : this.value !== undefined && this.value !== null && this.value !== ''
       const criteria = this.clearable &&
-          !this.selectDisabled &&
-          this.inputHovering &&
-          hasValue
+        !this.selectDisabled &&
+        this.inputHovering &&
+        hasValue
       return criteria
     },
     readonly() {
@@ -131,6 +140,9 @@ export default {
     }
   },
   watch: {
+    placeholder(val) {
+      this.cachedPlaceHolder = this.currentPlaceholder = val
+    },
     selectDisabled() {
       this.$nextTick(() => {
         this.resetInputHeight()
@@ -139,7 +151,6 @@ export default {
   },
   methods: {
     toggleMenu() {
-      debugger
       // if (!this.selectDisabled) {
       //   if (this.menuVisibleOnFocus) {
       //     this.menuVisibleOnFocus = false
@@ -152,7 +163,6 @@ export default {
       // }
     },
     handleClose() {
-      debugger
       this.visible = false
     },
     handleFocus(event) {
@@ -183,15 +193,34 @@ export default {
     },
     doDestroy() {
       this.$refs.popper && this.$refs.popper.doDestroy()
+    },
+    onInputChange() {
+      if (this.filterable && this.query !== this.selectedLabel) {
+        this.query = this.selectedLabel
+        this.handleQueryChange(this.query)
+      }
     }
+  },
+
+  created() {
+    this.cachedPlaceHolder = this.currentPlaceholder = this.placeholder
+    if (this.multiple && !Array.isArray(this.value)) {
+      this.$emit('input', [])
+    }
+    if (!this.multiple && Array.isArray(this.value)) {
+      this.$emit('input', '')
+    }
+    this.debouncedOnInputChange = debounce(this.debounce, () => {
+      console.log(1)
+      // this.onInputChange()
+    })
   }
 }
 </script>
 
 <style>
 .el-select {
-    display: inline-block;
-    position: relative
+  display: inline-block;
+  position: relative;
 }
-
 </style>

@@ -8,18 +8,15 @@ let startClick
 let seed = 0
 
 !Vue.prototype.$isServer && on(document, 'mousedown', e => {
-  debugger
   startClick = e
 })
 
 !Vue.prototype.$isServer && on(document, 'mouseup', e => {
-  debugger
   nodeList.forEach(node => node[ctx].documentHandler(e, startClick))
 })
 
 function createDocumentHandler(el, binding, vnode) {
-  return function(mouseup = {}, mousedown = {}) {
-    debugger
+  return function (mouseup = {}, mousedown = {}) {
     if (!vnode ||
       !vnode.context ||
       !mouseup.target ||
@@ -28,9 +25,8 @@ function createDocumentHandler(el, binding, vnode) {
       el.contains(mousedown.target) ||
       el === mouseup.target ||
       (vnode.context.popperElm &&
-      (vnode.context.popperElm.contains(mouseup.target) ||
-      vnode.context.popperElm.contains(mousedown.target)))) return
-
+        (vnode.context.popperElm.contains(mouseup.target) ||
+          vnode.context.popperElm.contains(mousedown.target)))) return
     if (binding.expression &&
       el[ctx].methodName &&
       vnode.context[el[ctx].methodName]) {
@@ -51,7 +47,6 @@ function createDocumentHandler(el, binding, vnode) {
  */
 export default {
   bind(el, binding, vnode) {
-    debugger
     nodeList.push(el)
     const id = seed++
     el[ctx] = {
@@ -63,16 +58,13 @@ export default {
   },
 
   update(el, binding, vnode) {
-    debugger
     el[ctx].documentHandler = createDocumentHandler(el, binding, vnode)
     el[ctx].methodName = binding.expression
     el[ctx].bindingFn = binding.value
   },
 
   unbind(el) {
-    debugger
     const len = nodeList.length
-
     for (let i = 0; i < len; i++) {
       if (nodeList[i][ctx].id === el[ctx].id) {
         nodeList.splice(i, 1)

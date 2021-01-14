@@ -14,7 +14,8 @@
   "dependencies": {
     "vue": "2.5.17",
     "element-ui": "2.14.1",
-    "async-validator": "~1.8.1"
+    "async-validator": "~1.8.1",
+    "throttle-debounce": "^1.0.1"
   },
   "devDependencies": {
     "node-sass": "^4.7.2",

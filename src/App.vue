@@ -16,12 +16,8 @@
         </m-checkbox-group>
       </m-form-item>
       <m-form-item label="数量1">
-       <m-select v-model="form.select" placeholder="请选择">
-          <m-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+        <m-select v-model="form.select">
+          <m-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
           </m-option>
         </m-select>
       </m-form-item>
