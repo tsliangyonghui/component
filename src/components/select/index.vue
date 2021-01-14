@@ -9,6 +9,12 @@
         <i v-if="showClose" class="el-select__caret el-input__icon el-icon-circle-close" @click="handleClearClick"></i>
       </template>
     </m-input>
+    <transition name="el-zoom-in-top" @before-enter="handleMenuEnter" @after-leave="doDestroy">
+      <m-select-menu ref="popper" :append-to-body="popperAppendToBody" v-show="visible && emptyText !== false">
+        <m-option :value="query" created v-if="showNewOption">
+        </m-option>
+      </m-select-menu>
+    </transition>
   </div>
 </template>
 
@@ -18,10 +24,13 @@ import { t } from '@/locale'
 import Focus from '@/mixins/focus'
 import Clickoutside from '@/utils/clickoutside'
 import debounce from 'throttle-debounce/debounce'
+import MSelectMenu from './select-dropdown'
+import MOption from './option.vue'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',
   mixins: [Locale, Focus('reference')],
+  components: { MSelectMenu, MOption },
   directives: { Clickoutside },
   inject: {
     mForm: {
@@ -150,6 +159,13 @@ export default {
     }
   },
   methods: {
+    doDestroy() {
+      this.$refs.popper && this.$refs.popper.doDestroy()
+    },
+
+    handleMenuEnter() {
+      this.$nextTick(() => this.scrollToOption(this.selected))
+    },
     toggleMenu() {
       // if (!this.selectDisabled) {
       //   if (this.menuVisibleOnFocus) {
@@ -187,12 +203,6 @@ export default {
         }
       }, 50)
       this.softFocus = false
-    },
-    handleMenuEnter() {
-      this.$nextTick(() => this.scrollToOption(this.selected))
-    },
-    doDestroy() {
-      this.$refs.popper && this.$refs.popper.doDestroy()
     },
     onInputChange() {
       if (this.filterable && this.query !== this.selectedLabel) {
