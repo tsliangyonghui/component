@@ -10,6 +10,8 @@ import MRadio from './components/radio'
 import MRadioButton from './components/radio/radio-button'
 import MRadioGroup from './components/radio/radio-group'
 import MSelect from './components/select'
+import MOption from './components/select/option'
+import MScrollbar from './components/scroll-bar'
 Vue.component(MForm.name, MForm)
 Vue.component(MFormItem.name, MFormItem)
 Vue.component(MInput.name, MInput)
@@ -21,6 +23,8 @@ Vue.component(MRadioButton.name, MRadioButton)
 Vue.component(MRadioGroup.name, MRadioGroup)
 Vue.component(MInputNumber.name, MInputNumber)
 Vue.component(MSelect.name, MSelect)
+Vue.component(MOption.name, MOption)
+Vue.component(MScrollbar.name, MScrollbar)
 import './styles/font.css'
 import App from './App'
 

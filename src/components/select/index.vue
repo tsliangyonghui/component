@@ -11,8 +11,11 @@
     </m-input>
     <transition name="el-zoom-in-top" @before-enter="handleMenuEnter" @after-leave="doDestroy">
       <m-select-menu ref="popper" :append-to-body="popperAppendToBody" v-show="visible && emptyText !== false">
-        <m-option :value="query" created v-if="showNewOption">
-        </m-option>
+        <m-scrollbar tag="ul" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" ref="scrollbar" :class="{ 'is-empty': !allowCreate && query && filteredOptionsCount === 0 }" v-show="showScrollbar">
+          <m-option :value="query" created v-if="showNewOption">
+          </m-option>
+          <slot></slot>
+        </m-scrollbar>
       </m-select-menu>
     </transition>
   </div>
@@ -25,12 +28,11 @@ import Focus from '@/mixins/focus'
 import Clickoutside from '@/utils/clickoutside'
 import debounce from 'throttle-debounce/debounce'
 import MSelectMenu from './select-dropdown'
-import MOption from './option.vue'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',
   mixins: [Locale, Focus('reference')],
-  components: { MSelectMenu, MOption },
+  components: { MSelectMenu },
   directives: { Clickoutside },
   inject: {
     mForm: {
@@ -99,10 +101,17 @@ export default {
       cachedPlaceHolder: '',
       selectedLabel: '',
       options: [],
+      cachedOptions: [],
+      optionsCount: 0,
+      filteredOptionsCount: 0,
+      selected: this.multiple ? [] : {},
       query: ''
     }
   },
   computed: {
+    showScrollbar() {
+      return this.options.length > 0 && !this.loading
+    },
     debounce() {
       return this.remote ? 300 : 0
     },
@@ -162,21 +171,28 @@ export default {
     doDestroy() {
       this.$refs.popper && this.$refs.popper.doDestroy()
     },
-
+    scrollToOption(option) {
+      const target = Array.isArray(option) && option[0] ? option[0].$el : option.$el
+      if (this.$refs.popper && target) {
+        const menu = this.$refs.popper.$el.querySelector('.el-select-dropdown__wrap')
+        scrollIntoView(menu, target)
+      }
+      this.$refs.scrollbar && this.$refs.scrollbar.handleScroll()
+    },
     handleMenuEnter() {
       this.$nextTick(() => this.scrollToOption(this.selected))
     },
     toggleMenu() {
-      // if (!this.selectDisabled) {
-      //   if (this.menuVisibleOnFocus) {
-      //     this.menuVisibleOnFocus = false
-      //   } else {
-      //     this.visible = !this.visible
-      //   }
-      //   if (this.visible) {
-      //     (this.$refs.input || this.$refs.reference).focus()
-      //   }
-      // }
+      if (!this.selectDisabled) {
+        if (this.menuVisibleOnFocus) {
+          this.menuVisibleOnFocus = false
+        } else {
+          this.visible = !this.visible
+        }
+        if (this.visible) {
+          (this.$refs.input || this.$refs.reference).focus()
+        }
+      }
     },
     handleClose() {
       this.visible = false
