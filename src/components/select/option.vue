@@ -1,8 +1,7 @@
 <template>
   <li @mouseenter="hoverItem" @click.stop="selectOptionClick" class="el-select-dropdown__item" v-show="visible" :class="{
       'selected': itemSelected,
-      'is-disabled': disabled || groupDisabled || limitReached,
-      'hover': hover
+      'is-disabled': disabled || groupDisabled || limitReached
     }">
     <slot>
       <span>{{ currentLabel }}</span>
@@ -143,7 +142,6 @@ export default {
 .el-select-dropdown__item.is-disabled:hover {
   background-color: #fff;
 }
-.el-select-dropdown__item.hover,
 .el-select-dropdown__item:hover {
   background-color: #f5f7fa;
 }

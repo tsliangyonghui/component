@@ -22,16 +22,18 @@
 </template>
 
 <script>
+import Emitter from '@/mixins/emitter'
 import Locale from '@/mixins/locale'
 import { t } from '@/locale'
 import Focus from '@/mixins/focus'
 import Clickoutside from '@/utils/clickoutside'
 import debounce from 'throttle-debounce/debounce'
 import MSelectMenu from './select-dropdown'
+import { getValueByPath, valueEquals, isIE, isEdge } from 'element-ui/src/utils/util'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',
-  mixins: [Locale, Focus('reference')],
+  mixins: [Emitter, Locale, Focus('reference')],
   components: { MSelectMenu },
   directives: { Clickoutside },
   inject: {
@@ -97,6 +99,8 @@ export default {
   data() {
     return {
       visible: false,
+      createdSelected: false,
+      menuVisibleOnFocus: false,
       currentPlaceholder: '',
       cachedPlaceHolder: '',
       selectedLabel: '',
@@ -105,7 +109,9 @@ export default {
       optionsCount: 0,
       filteredOptionsCount: 0,
       selected: this.multiple ? [] : {},
-      query: ''
+      query: '',
+      inputWidth: 0,
+      initialInputHeight: 0
     }
   },
   computed: {
@@ -165,6 +171,64 @@ export default {
       this.$nextTick(() => {
         this.resetInputHeight()
       })
+    },
+
+    visible(val) {
+      debugger
+      if (!val) {
+        this.broadcast('ElSelectDropdown', 'destroyPopper')
+        if (this.$refs.input) {
+          this.$refs.input.blur()
+        }
+        this.query = ''
+        this.previousQuery = null
+        this.selectedLabel = ''
+        this.inputLength = 20
+        this.menuVisibleOnFocus = false
+        this.resetHoverIndex()
+        this.$nextTick(() => {
+          if (this.$refs.input &&
+            this.$refs.input.value === '' &&
+            this.selected.length === 0) {
+            this.currentPlaceholder = this.cachedPlaceHolder
+          }
+        })
+        if (!this.multiple) {
+          if (this.selected) {
+            if (this.filterable && this.allowCreate &&
+              this.createdSelected && this.createdLabel) {
+              this.selectedLabel = this.createdLabel
+            } else {
+              this.selectedLabel = this.selected.currentLabel
+            }
+            if (this.filterable) this.query = this.selectedLabel
+          }
+
+          if (this.filterable) {
+            this.currentPlaceholder = this.cachedPlaceHolder
+          }
+        }
+      } else {
+        this.broadcast('MSelectDropdown', 'updatePopper')
+        if (this.filterable) {
+          this.query = this.remote ? '' : this.selectedLabel
+          this.handleQueryChange(this.query)
+          if (this.multiple) {
+            this.$refs.input.focus()
+          } else {
+            if (!this.remote) {
+              this.broadcast('ElOption', 'queryChange', '')
+              this.broadcast('ElOptionGroup', 'queryChange')
+            }
+
+            if (this.selectedLabel) {
+              this.currentPlaceholder = this.selectedLabel
+              this.selectedLabel = ''
+            }
+          }
+        }
+      }
+      this.$emit('visible-change', val)
     }
   },
   methods: {
@@ -225,6 +289,78 @@ export default {
         this.query = this.selectedLabel
         this.handleQueryChange(this.query)
       }
+    },
+    resetInputHeight() {
+      if (this.collapseTags && !this.filterable) return
+      this.$nextTick(() => {
+        if (!this.$refs.reference) return
+        const inputChildNodes = this.$refs.reference.$el.childNodes
+        const input = [].filter.call(inputChildNodes, item => item.tagName === 'INPUT')[0]
+        const tags = this.$refs.tags
+        const sizeInMap = this.initialInputHeight || 40
+        input.style.height = this.selected.length === 0
+          ? sizeInMap + 'px'
+          : Math.max(
+            tags ? (tags.clientHeight + (tags.clientHeight > sizeInMap ? 6 : 0)) : 0,
+            sizeInMap
+          ) + 'px'
+        if (this.visible && this.emptyText !== false) {
+          this.broadcast('ElSelectDropdown', 'updatePopper')
+        }
+      })
+    },
+    getOption(value) {
+      let option
+      const isObject = Object.prototype.toString.call(value).toLowerCase() === '[object object]'
+      const isNull = Object.prototype.toString.call(value).toLowerCase() === '[object null]'
+      const isUndefined = Object.prototype.toString.call(value).toLowerCase() === '[object undefined]'
+
+      for (let i = this.cachedOptions.length - 1; i >= 0; i--) {
+        const cachedOption = this.cachedOptions[i]
+        const isEqual = isObject
+          ? getValueByPath(cachedOption.value, this.valueKey) === getValueByPath(value, this.valueKey)
+          : cachedOption.value === value
+        if (isEqual) {
+          option = cachedOption
+          break
+        }
+      }
+      if (option) return option
+      const label = (!isObject && !isNull && !isUndefined)
+        ? value : ''
+      const newOption = {
+        value: value,
+        currentLabel: label
+      }
+      if (this.multiple) {
+        newOption.hitState = false
+      }
+      return newOption
+    },
+    setSelected() {
+      if (!this.multiple) {
+        const option = this.getOption(this.value)
+        if (option.created) {
+          this.createdLabel = option.currentLabel
+          this.createdSelected = true
+        } else {
+          this.createdSelected = false
+        }
+        this.selectedLabel = option.currentLabel
+        this.selected = option
+        if (this.filterable) this.query = this.selectedLabel
+        return
+      }
+      const result = []
+      if (Array.isArray(this.value)) {
+        this.value.forEach(value => {
+          result.push(this.getOption(value))
+        })
+      }
+      this.selected = result
+      this.$nextTick(() => {
+        this.resetInputHeight()
+      })
     }
   },
 
@@ -240,6 +376,35 @@ export default {
       console.log(1)
       // this.onInputChange()
     })
+  },
+  mounted() {
+    if (this.multiple && Array.isArray(this.value) && this.value.length > 0) {
+      this.currentPlaceholder = ''
+    }
+
+    const reference = this.$refs.reference
+    if (reference && reference.$el) {
+      const sizeMap = {
+        medium: 36,
+        small: 32,
+        mini: 28
+      }
+      const input = reference.$el.querySelector('input')
+      this.initialInputHeight = input.getBoundingClientRect().height || sizeMap[this.selectSize]
+    }
+    if (this.remote && this.multiple) {
+      this.resetInputHeight()
+    }
+    this.$nextTick(() => {
+      if (reference && reference.$el) {
+        this.inputWidth = reference.$el.getBoundingClientRect().width
+      }
+    })
+    this.setSelected()
+  },
+
+  beforeDestroy() {
+    if (this.$el && this.handleResize) removeResizeListener(this.$el, this.handleResize)
   }
 }
 </script>
