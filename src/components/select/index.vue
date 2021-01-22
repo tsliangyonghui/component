@@ -172,9 +172,7 @@ export default {
         this.resetInputHeight()
       })
     },
-
     visible(val) {
-      debugger
       if (!val) {
         this.broadcast('ElSelectDropdown', 'destroyPopper')
         if (this.$refs.input) {

@@ -3,6 +3,7 @@ import {
   PopupManager
 } from '@/utils/popup'
 
+debugger
 const PopperJS = Vue.prototype.$isServer ? function () { } : require('./popper')
 const stop = e => e.stopPropagation()
 
@@ -78,6 +79,7 @@ export default {
 
   methods: {
     createPopper() {
+      debugger
       if (this.$isServer) return
       this.currentPlacement = this.currentPlacement || this.placement
       if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(this.currentPlacement)) {
@@ -171,7 +173,7 @@ export default {
           break
         }
       }
-
+      debugger
       const arrow = document.createElement('div')
 
       if (hash) {
