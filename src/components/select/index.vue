@@ -30,6 +30,7 @@ import Clickoutside from '@/utils/clickoutside'
 import debounce from 'throttle-debounce/debounce'
 import MSelectMenu from './select-dropdown'
 import { getValueByPath, isIE, isEdge } from '@/utils/util'
+import scrollIntoView from '@/utils/scroll-into-view'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',
@@ -111,7 +112,8 @@ export default {
       selected: this.multiple ? [] : {},
       query: '',
       inputWidth: 0,
-      initialInputHeight: 0
+      initialInputHeight: 0,
+      isSilentBlur: false
     }
   },
   computed: {
@@ -230,6 +232,19 @@ export default {
     }
   },
   methods: {
+    resetHoverIndex() {
+      setTimeout(() => {
+        if (!this.multiple) {
+          this.hoverIndex = this.options.indexOf(this.selected)
+        } else {
+          if (this.selected.length > 0) {
+            this.hoverIndex = Math.min.apply(null, this.selected.map(item => this.options.indexOf(item)))
+          } else {
+            this.hoverIndex = -1
+          }
+        }
+      }, 300)
+    },
     doDestroy() {
       this.$refs.popper && this.$refs.popper.doDestroy()
     },
@@ -359,6 +374,47 @@ export default {
       this.$nextTick(() => {
         this.resetInputHeight()
       })
+    },
+    emitChange(val) {
+      if (!valueEquals(this.value, val)) {
+        this.$emit('change', val)
+      }
+    },
+    setSoftFocus() {
+      this.softFocus = true
+      const input = this.$refs.input || this.$refs.reference
+      if (input) {
+        input.focus()
+      }
+    },
+    handleOptionSelect(option, byClick) {
+      if (this.multiple) {
+        const value = (this.value || []).slice()
+        const optionIndex = this.getValueIndex(value, option.value)
+        if (optionIndex > -1) {
+          value.splice(optionIndex, 1)
+        } else if (this.multipleLimit <= 0 || value.length < this.multipleLimit) {
+          value.push(option.value)
+        }
+        this.$emit('input', value)
+        this.emitChange(value)
+        if (option.created) {
+          this.query = ''
+          this.handleQueryChange('')
+          this.inputLength = 20
+        }
+        if (this.filterable) this.$refs.input.focus()
+      } else {
+        this.$emit('input', option.value)
+        this.emitChange(option.value)
+        this.visible = false
+      }
+      this.isSilentBlur = byClick
+      this.setSoftFocus()
+      if (this.visible) return
+      this.$nextTick(() => {
+        this.scrollToOption(option)
+      })
     }
   },
 
@@ -371,9 +427,9 @@ export default {
       this.$emit('input', '')
     }
     this.debouncedOnInputChange = debounce(this.debounce, () => {
-      console.log(1)
-      // this.onInputChange()
+      this.onInputChange()
     })
+    this.$on('handleOptionClick', this.handleOptionSelect)
   },
   mounted() {
     if (this.multiple && Array.isArray(this.value) && this.value.length > 0) {
