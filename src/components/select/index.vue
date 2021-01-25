@@ -29,7 +29,7 @@ import Focus from '@/mixins/focus'
 import Clickoutside from '@/utils/clickoutside'
 import debounce from 'throttle-debounce/debounce'
 import MSelectMenu from './select-dropdown'
-import { getValueByPath, valueEquals, isIE, isEdge } from 'element-ui/src/utils/util'
+import { getValueByPath, isIE, isEdge } from '@/utils/util'
 export default {
   name: 'MSelect',
   componentName: 'MSelect',

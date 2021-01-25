@@ -26,6 +26,7 @@ Vue.component(MSelect.name, MSelect)
 Vue.component(MOption.name, MOption)
 Vue.component(MScrollbar.name, MScrollbar)
 import './styles/font.css'
+import './styles/index.css'
 import App from './App'
 
 new Vue({

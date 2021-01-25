@@ -1,4 +1,4 @@
-import { on, off } from 'element-ui/src/utils/dom'
+import { on, off } from '@/utils/dom'
 import { renderThumbStyle, BAR_MAP } from './util'
 
 /* istanbul ignore next */
@@ -23,7 +23,6 @@ export default {
 
   render(h) {
     const { size, move, bar } = this
-
     return (
       <div
         class={['el-scrollbar__bar', 'is-' + bar.key]}
