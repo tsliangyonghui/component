@@ -41,19 +41,44 @@ export default {
   name: 'App',
   data() {
     return {
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      options: [
+        {
+          value: '选项1',
+          label: '黄金糕'
+        },
+        {
+          value: '选项2',
+          label: '双皮奶'
+        },
+        {
+          value: '选项3',
+          label: '蚵仔煎'
+        },
+        {
+          value: '选项4',
+          label: '蚵仔煎4'
+        },
+        {
+          value: '选项5',
+          label: '北京烤鸭'
+        },
+        {
+          value: '选项6',
+          label: '北京烤鸭6'
+        },
+        {
+          value: '选项7',
+          label: '北京烤鸭7'
+        },
+        {
+          value: '选项8',
+          label: '北京烤鸭8'
+        },
+        {
+          value: '选项9',
+          label: '北京烤鸭9'
+        }
+      ],
       form: {
         name: '',
         type: [],
