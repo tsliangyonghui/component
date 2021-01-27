@@ -255,6 +255,15 @@ export default {
     }
   },
   methods: {
+    selectOption() {
+      if (!this.visible) {
+        this.toggleMenu()
+      } else {
+        if (this.options[this.hoverIndex]) {
+          this.handleOptionSelect(this.options[this.hoverIndex])
+        }
+      }
+    },
     resetHoverIndex() {
       setTimeout(() => {
         if (!this.multiple) {
