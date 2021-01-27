@@ -21,18 +21,9 @@
           </m-option>
         </m-select>
       </m-form-item>
-      <!-- <m-form-item label="数量1">
-       <m-select v-model="form.select2" placeholder="请选择">
-          <m-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </m-option>
-        </m-select>
-      </m-form-item> -->
     </m-form>
     <m-button @click="onClick">确定</m-button>
+    <m-slider v-model="value1"></m-slider>
   </div>
 </template>
 
@@ -41,6 +32,7 @@ export default {
   name: 'App',
   data() {
     return {
+      value1: 5,
       options: [
         {
           value: '选项1',
