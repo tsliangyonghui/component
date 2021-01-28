@@ -12,6 +12,8 @@ import MRadioGroup from './components/radio/radio-group'
 import MSelect from './components/select'
 import MOption from './components/select/option'
 import MScrollbar from './components/scroll-bar'
+import MSlider from './components/slider'
+import MTooltip from './components/tooltip'
 Vue.component(MForm.name, MForm)
 Vue.component(MFormItem.name, MFormItem)
 Vue.component(MInput.name, MInput)
@@ -25,6 +27,8 @@ Vue.component(MInputNumber.name, MInputNumber)
 Vue.component(MSelect.name, MSelect)
 Vue.component(MOption.name, MOption)
 Vue.component(MScrollbar.name, MScrollbar)
+Vue.component(MSlider.name, MSlider)
+Vue.component(MTooltip.name, MTooltip)
 import './styles/font.css'
 import './styles/index.css'
 import App from './App'

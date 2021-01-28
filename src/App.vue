@@ -23,7 +23,11 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-slider v-model="value1"></m-slider>
+    <m-tooltip placement="top">
+      <div slot="content">多行信息<br />第二行信息</div>
+      <m-button>Top center</m-button>
+      <button id="bbb" data-c="ccc" class="aaa">aaa</button>
+    </m-tooltip>
   </div>
 </template>
 
