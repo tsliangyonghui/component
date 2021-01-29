@@ -23,11 +23,10 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-tooltip placement="top">
-      <div slot="content">多行信息<br />第二行信息</div>
-      <m-button>Top center</m-button>
-      <button id="bbb" data-c="ccc" class="aaa">aaa</button>
-    </m-tooltip>
+    1
+    <m-time-picker v-model="value1" placeholder="任意时间点">
+    </m-time-picker>
+    2
   </div>
 </template>
 
@@ -36,7 +35,7 @@ export default {
   name: 'App',
   data() {
     return {
-      value1: 5,
+      value1: '',
       options: [
         {
           value: '选项1',
