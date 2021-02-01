@@ -15,6 +15,7 @@ import MScrollbar from './components/scroll-bar'
 import MSlider from './components/slider'
 import MTooltip from './components/tooltip'
 import MTimePicker from './components/time-picker'
+import MCalendar from './components/calendar'
 Vue.component(MForm.name, MForm)
 Vue.component(MFormItem.name, MFormItem)
 Vue.component(MInput.name, MInput)
@@ -31,6 +32,7 @@ Vue.component(MScrollbar.name, MScrollbar)
 Vue.component(MSlider.name, MSlider)
 Vue.component(MTooltip.name, MTooltip)
 Vue.component(MTimePicker.name, MTimePicker)
+Vue.component(MCalendar.name, MCalendar)
 import './styles/font.css'
 import './styles/index.css'
 import App from './App'

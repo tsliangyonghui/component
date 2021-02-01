@@ -13,7 +13,7 @@
   </transition>
 </template>
 
-<script type="text/babel">
+<script>
 import { limitTimeRange, isDate, clearMilliseconds, timeWithinRange } from '@/utils/date-util'
 import Locale from '@/mixins/locale'
 import TimeSpinner from '../basic/time-spinner'
@@ -40,7 +40,8 @@ export default {
       }
     },
 
-    value(newVal) {
+    value(newVal, oldVal) {
+      debugger
       let date
       if (newVal instanceof Date) {
         date = limitTimeRange(newVal, this.selectableRange, this.format)
@@ -167,3 +168,174 @@ export default {
   }
 }
 </script>
+<style>
+.el-date-editor {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+.el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+  width: 220px;
+}
+.el-time-panel {
+  margin: 5px 0;
+  border: 1px solid #e4e7ed;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  position: absolute;
+  width: 180px;
+  left: 0;
+  z-index: 1000;
+  user-select: none;
+  box-sizing: content-box;
+}
+.el-time-panel__content {
+  font-size: 0;
+  position: relative;
+  overflow: hidden;
+}
+.el-time-panel__content::after,
+.el-time-panel__content::before {
+  content: "";
+  top: 50%;
+  position: absolute;
+  margin-top: -15px;
+  height: 32px;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding-top: 6px;
+  text-align: left;
+  border-top: 1px solid #e4e7ed;
+  border-bottom: 1px solid #e4e7ed;
+}
+.el-time-panel__content::after {
+  left: 50%;
+  margin-left: 12%;
+  margin-right: 12%;
+}
+.el-time-panel__content::before {
+  padding-left: 50%;
+  margin-right: 12%;
+  margin-left: 12%;
+}
+.el-time-panel__content.has-seconds::after {
+  left: calc(100% / 3 * 2);
+}
+.el-time-panel__content.has-seconds::before {
+  padding-left: calc(100% / 3);
+}
+.el-time-panel__footer {
+  border-top: 1px solid #e4e4e4;
+  padding: 4px;
+  height: 36px;
+  line-height: 25px;
+  text-align: right;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.el-time-panel__btn {
+  border: none;
+  line-height: 28px;
+  padding: 0 5px;
+  margin: 0 5px;
+  cursor: pointer;
+  background-color: transparent;
+  outline: 0;
+  font-size: 12px;
+  color: #303133;
+}
+.el-time-panel__btn.confirm {
+  font-weight: 800;
+  color: #409eff;
+}
+.el-time-spinner.has-seconds .el-time-spinner__wrapper {
+  width: 33.3%;
+}
+.el-time-spinner__wrapper {
+  max-height: 190px;
+  overflow: auto;
+  display: inline-block;
+  width: 50%;
+  vertical-align: top;
+  position: relative;
+}
+.el-time-spinner__wrapper
+  .el-scrollbar__wrap:not(.el-scrollbar__wrap--hidden-default) {
+  padding-bottom: 15px;
+}
+.el-time-spinner__input.el-input .el-input__inner,
+.el-time-spinner__list {
+  padding: 0;
+  text-align: center;
+}
+.el-time-spinner__wrapper.is-arrow {
+  box-sizing: border-box;
+  text-align: center;
+  overflow: hidden;
+}
+.el-time-spinner__wrapper.is-arrow .el-time-spinner__list {
+  transform: translateY(-32px);
+}
+.el-time-spinner__wrapper.is-arrow
+  .el-time-spinner__item:hover:not(.disabled):not(.active) {
+  background: #fff;
+  cursor: default;
+}
+.el-time-spinner__arrow {
+  font-size: 12px;
+  color: #909399;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  text-align: center;
+  height: 30px;
+  line-height: 30px;
+  cursor: pointer;
+}
+.el-time-spinner__arrow:hover {
+  color: #409eff;
+}
+.el-time-spinner__arrow.el-icon-arrow-up {
+  top: 10px;
+}
+.el-time-spinner__arrow.el-icon-arrow-down {
+  bottom: 10px;
+}
+.el-time-spinner__input.el-input {
+  width: 70%;
+}
+.el-time-spinner__list {
+  margin: 0;
+  list-style: none;
+}
+.el-time-spinner__list::after,
+.el-time-spinner__list::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 80px;
+}
+.el-time-spinner__item {
+  height: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  color: #606266;
+}
+.el-time-spinner__item:hover:not(.disabled):not(.active) {
+  background: #f5f7fa;
+  cursor: pointer;
+}
+.el-time-spinner__item.active:not(.disabled) {
+  color: #303133;
+  font-weight: 700;
+}
+.el-time-spinner__item.disabled {
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+</style>

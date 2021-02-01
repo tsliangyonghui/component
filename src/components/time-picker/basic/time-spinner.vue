@@ -42,7 +42,7 @@
 </template>
 
 <script type="text/babel">
-import { getRangeHours, getRangeMinutes, modifyTime } from 'element-ui/src/utils/date-util'
+import { getRangeHours, getRangeMinutes, modifyTime } from '@/utils/date-util'
 import RepeatClick from 'element-ui/src/directives/repeat-click'
 
 export default {

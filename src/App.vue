@@ -15,18 +15,10 @@
           <m-checkbox label="地推活动" name="type"></m-checkbox>
         </m-checkbox-group>
       </m-form-item>
-      <m-form-item label="数量1">
-        <m-select v-model="form.select">
-          <m-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-          </m-option>
-        </m-select>
-      </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    1
-    <m-time-picker v-model="value1" placeholder="任意时间点">
-    </m-time-picker>
-    2
+    <m-calendar v-model="value" :first-day-of-week="7">
+    </m-calendar>
   </div>
 </template>
 
@@ -35,45 +27,7 @@ export default {
   name: 'App',
   data() {
     return {
-      value1: '',
-      options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '蚵仔煎4'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        },
-        {
-          value: '选项6',
-          label: '北京烤鸭6'
-        },
-        {
-          value: '选项7',
-          label: '北京烤鸭7'
-        },
-        {
-          value: '选项8',
-          label: '北京烤鸭8'
-        },
-        {
-          value: '选项9',
-          label: '北京烤鸭9'
-        }
-      ],
+      value: '',
       form: {
         name: '',
         type: [],

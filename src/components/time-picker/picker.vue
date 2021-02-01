@@ -272,10 +272,10 @@ export default {
   mixins: [Emitter, NewPopper],
 
   inject: {
-    elForm: {
+    mForm: {
       default: ''
     },
-    elFormItem: {
+    mFormItem: {
       default: ''
     }
   },
@@ -352,7 +352,7 @@ export default {
         this.emitChange(this.value)
         this.userInput = null
         if (this.validateEvent) {
-          this.dispatch('ElFormItem', 'el.form.blur')
+          this.dispatch('MFormItem', 'm.form.blur')
         }
         this.$emit('blur', this)
         this.blur()
@@ -374,7 +374,7 @@ export default {
     },
     value(val, oldVal) {
       if (!valueEquals(val, oldVal) && !this.pickerVisible && this.validateEvent) {
-        this.dispatch('ElFormItem', 'el.form.change', val)
+        this.dispatch('MFormItem', 'e.form.change', val)
       }
     }
   },
@@ -474,15 +474,15 @@ export default {
     },
 
     _elFormItemSize() {
-      return (this.elFormItem || {}).elFormItemSize
+      return (this.mFormItem || {}).mFormItemSize
     },
 
     pickerSize() {
-      return this.size || this._elFormItemSize || (this.$ELEMENT || {}).size
+      return this.size || this._mFormItemSize || (this.$ELEMENT || {}).size
     },
 
     pickerDisabled() {
-      return this.disabled || (this.elForm || {}).disabled
+      return this.disabled || (this.mForm || {}).disabled
     },
 
     firstInputId() {
@@ -509,7 +509,6 @@ export default {
   },
 
   created() {
-    // vue-popper
     this.popperOptions = {
       boundariesPadding: 0,
       gpuAcceleration: false
