@@ -133,7 +133,10 @@ export const getRangeHours = function (ranges) {
 }
 
 export const getPrevMonthLastDays = (date, amount) => {
-  if (amount <= 0) return []
+  if (amount === 0) return []
+  if (amount < 0) {
+    amount = 7 + amount
+  }
   const temp = new Date(date.getTime())
   temp.setDate(0)
   const lastDay = temp.getDate()

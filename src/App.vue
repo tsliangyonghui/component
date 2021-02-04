@@ -17,7 +17,7 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-calendar v-model="value" :first-day-of-week="7">
+    <m-calendar v-model="value" :first-day-of-week="0">
     </m-calendar>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   name: 'App',
   data() {
     return {
-      value: '',
+      value: new Date(),
       form: {
         name: '',
         type: [],

@@ -66,6 +66,23 @@ export default {
     }
   },
   computed: {
+    prevMonthDatePrefix() {
+      const temp = new Date(this.date.getTime())
+      temp.setDate(0)
+      return fecha.format(temp, 'yyyy-MM')
+    },
+
+    curMonthDatePrefix() {
+      return fecha.format(this.date, 'yyyy-MM')
+    },
+
+    nextMonthDatePrefix() {
+      const temp = new Date(this.date.getFullYear(), this.date.getMonth() + 1, 1)
+      return fecha.format(temp, 'yyyy-MM')
+    },
+    formatedToday() {
+      return fecha.format(this.now, 'yyyy-MM-dd')
+    },
     formatedDate() {
       return fecha.format(this.date, 'yyyy-MM-dd')
     },
@@ -163,6 +180,19 @@ export default {
     }
   },
   methods: {
+    selectDate(type) {
+      let day = ''
+      if (type === 'prev-month') {
+        day = `${this.prevMonthDatePrefix}-01`
+      } else if (type === 'next-month') {
+        day = `${this.nextMonthDatePrefix}-01`
+      } else {
+        day = this.formatedToday
+      }
+
+      if (day === this.formatedDate) return
+      this.pickDay(day)
+    },
     pickDay(day) {
       this.realSelectedDay = day
     },
