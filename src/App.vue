@@ -17,8 +17,9 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-calendar v-model="value" :first-day-of-week="0">
-    </m-calendar>
+    <m-upload :show-file-list="false" action="https://files.ts-ifire.com/uploadfile.php?m=qihang_10">
+      <m-button size="small" type="primary">点击上传</m-button>
+    </m-upload>
   </div>
 </template>
 

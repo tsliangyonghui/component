@@ -16,6 +16,7 @@ import MSlider from './components/slider'
 import MTooltip from './components/tooltip'
 import MTimePicker from './components/time-picker'
 import MCalendar from './components/calendar'
+import MUpload from './components/upload'
 Vue.component(MForm.name, MForm)
 Vue.component(MFormItem.name, MFormItem)
 Vue.component(MInput.name, MInput)
@@ -33,6 +34,7 @@ Vue.component(MSlider.name, MSlider)
 Vue.component(MTooltip.name, MTooltip)
 Vue.component(MTimePicker.name, MTimePicker)
 Vue.component(MCalendar.name, MCalendar)
+Vue.component(MUpload.name, MUpload)
 import './styles/font.css'
 import './styles/index.css'
 import App from './App'
