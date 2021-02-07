@@ -17,6 +17,7 @@ import MTooltip from './components/tooltip'
 import MTimePicker from './components/time-picker'
 import MCalendar from './components/calendar'
 import MUpload from './components/upload'
+import MColorPicker from './components/color-picker'
 Vue.component(MForm.name, MForm)
 Vue.component(MFormItem.name, MFormItem)
 Vue.component(MInput.name, MInput)
@@ -35,6 +36,7 @@ Vue.component(MTooltip.name, MTooltip)
 Vue.component(MTimePicker.name, MTimePicker)
 Vue.component(MCalendar.name, MCalendar)
 Vue.component(MUpload.name, MUpload)
+Vue.component(MColorPicker.name, MColorPicker)
 import './styles/font.css'
 import './styles/index.css'
 import App from './App'

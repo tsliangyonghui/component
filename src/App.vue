@@ -17,9 +17,7 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-upload :show-file-list="false" action="https://files.ts-ifire.com/uploadfile.php?m=qihang_10">
-      <m-button size="small" type="primary">点击上传</m-button>
-    </m-upload>
+    <m-color-picker v-model="value"></m-color-picker>
   </div>
 </template>
 
@@ -28,7 +26,7 @@ export default {
   name: 'App',
   data() {
     return {
-      value: new Date(),
+      value: '',
       form: {
         name: '',
         type: [],
