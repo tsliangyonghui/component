@@ -1,7 +1,7 @@
 <template>
   <div role="tree" class="el-tree">
-    <!-- <m-tree-node v-for="child in root.childNodes" :node="child" :props="props" :key="getNodeKey(child)">
-    </m-tree-node> -->
+    <m-tree-node v-for="child in root.childNodes" :node="child" :props="props" :key="getNodeKey(child)">
+    </m-tree-node>
   </div>
 </template>
 
@@ -86,7 +86,13 @@ export default {
   data() {
     return {
       store: null,
-      root: null
+      root: null,
+      dragState: {
+        showDropIndicator: false,
+        draggingNode: null,
+        dropNode: null,
+        allowDrop: true
+      }
     }
   },
   methods: {
@@ -95,6 +101,7 @@ export default {
     }
   },
   created() {
+    this.isTree = true
     this.store = new TreeStore({
       key: this.nodeKey,
       data: this.data,
@@ -110,6 +117,8 @@ export default {
       defaultExpandAll: this.defaultExpandAll,
       filterNodeMethod: this.filterNodeMethod
     })
+    debugger
+    this.root = this.store.root
   }
 }
 </script>

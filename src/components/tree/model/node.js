@@ -64,6 +64,7 @@ let nodeIdSeed = 0
 
 export default class Node {
   constructor(options) {
+    debugger
     this.id = nodeIdSeed++
     this.text = null
     this.checked = false

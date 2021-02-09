@@ -11,6 +11,7 @@ export default class TreeStore {
       }
     }
     this.nodesMap = {}
+    debugger
     this.root = new Node({
       data: this.data,
       store: this
