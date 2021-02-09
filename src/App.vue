@@ -17,7 +17,7 @@
       </m-form-item>
     </m-form>
     <m-button @click="onClick">确定</m-button>
-    <m-color-picker v-model="value"></m-color-picker>
+    <m-tree :data="data"></m-tree>
   </div>
 </template>
 
@@ -26,6 +26,15 @@ export default {
   name: 'App',
   data() {
     return {
+      data: [{
+        label: '一级 1',
+        children: [{
+          label: '二级 1-1',
+          children: [{
+            label: '三级 1-1-1'
+          }]
+        }]
+      }],
       value: '',
       form: {
         name: '',
